@@ -12,13 +12,12 @@ import sru.edu.sru_lib_management.core.data.query.StudentQuery.GET_STUDENTS_QUER
 import sru.edu.sru_lib_management.core.domain.model.Books
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.BookRepository
-import sru.edu.sru_lib_management.core.util.SaveCallBack
 
 @Component
 class BookRepositoryImp(
     private val client: DatabaseClient
 ) : BookRepository {
-    override suspend fun save(data: Books, callBack: SaveCallBack) {
+    override suspend fun save(data: Books) {
         TODO("Not yet implemented")
     }
 

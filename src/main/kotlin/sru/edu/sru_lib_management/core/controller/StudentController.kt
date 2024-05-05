@@ -7,24 +7,33 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.service.studentService.StudentService
-import sru.edu.sru_lib_management.core.util.SaveCallBack
+import sru.edu.sru_lib_management.core.util.CallBack
+
 
 @RestController
 @RequestMapping("api/v1/student")
 class StudentController(
     private val service: StudentService
 ) {
-    
+
+    val callBack = object : CallBack{
+        override fun onSuccess() {
+            ResponseEntity.status(HttpStatus.CREATED).build<Any>()
+        }
+
+        override fun onFailure(error: String) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error)
+        }
+    }
     /*
      * Add student to database
      */
     @PostMapping
     @Transactional
-    suspend fun saveStudent(@RequestBody students: Students?, callBack: SaveCallBack): ResponseEntity<Students> {
+    suspend fun saveStudent(@RequestBody students: Students): ResponseEntity<String> {
         //Save student
-        val saveStudent = service.saveStudent(students!!, callBack)
-        // if it cannot save return conflict else success
-        return ResponseEntity(saveStudent, HttpStatus.CREATED)
+        service.saveStudent(students, callBack)
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Operation is still processing")
     }
 
     @GetMapping
@@ -57,8 +66,8 @@ class StudentController(
     @PostMapping("/{studentID}")
     @ResponseBody
     suspend fun updateStudent(@RequestBody student: Students, @PathVariable studentID: Long): ResponseEntity<Students> {
-        val updateStudent = service.updateStudent(student.copy(studentID = studentID))
-        return ResponseEntity(updateStudent, HttpStatus.OK)
+        service.updateStudent(student.copy(studentID = studentID), callBack)
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 
     /*

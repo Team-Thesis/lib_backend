@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sru.edu.sru_lib_management.auth.domain.model.User
 import sru.edu.sru_lib_management.auth.domain.repository.AuthRepository
-import sru.edu.sru_lib_management.core.util.SaveCallBack
 import java.util.*
 
 @Component
@@ -19,15 +18,11 @@ class AuthRepositoryImp(
     }
 
     @Transactional
-    override suspend fun save(data: User, callBack: SaveCallBack) {
-        try {
-            client.sql(SAVE_USER_QUERY)
-                .bindValues(paramMap(user = data))
-                .await()
-            callBack.onSuccess()
-        }catch (e: Exception){
-            callBack.onFailure("Error ")
-        }
+    override suspend fun save(data: User) {
+        client.sql(SAVE_USER_QUERY)
+            .bindValues(paramMap(user = data))
+            .await()
+
     }
 
     override suspend fun update(data: User): User {

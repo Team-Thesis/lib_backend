@@ -1,54 +1,87 @@
 package sru.edu.sru_lib_management.core.data.repository
 
+import io.r2dbc.spi.Row
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
-import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.DELETE_ATTEND_QUERY
+import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ALL_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.SAVE_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
-import sru.edu.sru_lib_management.core.util.APIException
-import sru.edu.sru_lib_management.core.util.SaveCallBack
 import java.sql.Date
+import java.sql.Timestamp
+import java.time.LocalDate
 
 @Component
 class AttendRepositoryImp(
     private val client: DatabaseClient
 ) : AttendRepository {
 
-    override fun getCustomAttend(date: Date): Flow<Attend> {
-        TODO("Not yet implemented")
+    override fun getCustomAttend(date: Date): Flow<Attend> = client
+        .sql(GET_ATTEND_QUERY)
+            .map { row ->
+                rowAttendMap(row as Row)
+            }
+            .flow()
+
+
+    override suspend fun save(data: Attend) {
+        client.sql(SAVE_ATTEND_QUERY)
+            .bindValues(paramMap(data))
+            .await()
     }
 
-    override suspend fun save(data: Attend, callBack: SaveCallBack) {
-        try {
-
-        }catch (e: Exception){
-
-        }
-    }
-
-    override suspend fun update(data: Attend): Attend {
-        TODO("Not yet implemented")
+    override suspend fun update(data: Attend) {
+        client.sql(UPDATE_ATTEND_QUERY)
+            .bindValues(paramMap(data))
+            .fetch()
+            .awaitRowsUpdated()
     }
 
     override suspend fun getById(id: Long): Attend? {
-        TODO("Not yet implemented")
+        return client.sql(GET_ATTEND_QUERY)
+            .bind("attendID", id)
+            .map { row ->
+                rowAttendMap(row as Row)
+            }
+            .awaitSingle()
     }
 
     override fun getAll(): Flow<Attend> {
-        TODO("Not yet implemented")
+        return client.sql(GET_ALL_ATTEND_QUERY)
+            .map { row ->
+                rowAttendMap(row as Row)
+            }
+            .flow()
     }
 
     override suspend fun delete(id: Long): Boolean {
-        TODO("Not yet implemented")
+        val affectRow = client.sql(DELETE_ATTEND_QUERY)
+            .bind("attendID", id)
+            .fetch()
+            .awaitRowsUpdated()
+        return affectRow > 0
     }
 
 
+    private fun paramMap(attend: Attend): Map<String, Any> = mapOf(
+        "attendID" to attend.attendID!!,
+        "studentID" to attend.studentID,
+        "entryTimes" to attend.entryTimes,
+        "exitingTimes" to attend.exitingTimes,
+        "date" to attend.date,
+        "purpose" to attend.purpose
+    )
+
+    private fun rowAttendMap(row: Row): Attend = Attend(
+        attendID = row.get("attend_id", Long::class.java)!!,
+        studentID = row.get("student_id", Long::class.java)!!,
+        entryTimes = row.get("entry_times", Timestamp::class.java)!!,
+        exitingTimes = row.get("exiting_times", Timestamp::class.java)!!,
+        date = row.get("date", LocalDate::class.java)!!,
+        purpose = row.get("purpose", String::class.java)!!
+    )
 }

@@ -11,7 +11,8 @@ import sru.edu.sru_lib_management.core.data.query.StudentQuery.SAVE_STUDENT_QUER
 import sru.edu.sru_lib_management.core.data.query.StudentQuery.UPDATE_STUDENT_QUERY
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.StudentRepository
-import sru.edu.sru_lib_management.core.util.SaveCallBack
+import sru.edu.sru_lib_management.core.util.APIException
+import sru.edu.sru_lib_management.core.util.CallBack
 import java.time.LocalDate
 
 @Component
@@ -22,26 +23,17 @@ class StudentRepositoryImp (
     * Override function
     * */
     @Transactional
-    override suspend fun save(data: Students, callBack: SaveCallBack) {
-        try {
-            client.sql(SAVE_STUDENT_QUERY)
-                .bindValues(paramMap(data))
-                .await()
-            callBack.onSuccess()
-        }catch (e: Exception){
-            callBack.onFailure("Error occurred while saving student: ${e.message}")
-        }
+    override suspend fun save(data: Students) {
+        client.sql(SAVE_STUDENT_QUERY)
+            .bindValues(paramMap(data))
+            .await()
     }
 
-    override suspend fun update(data: Students): Students {
-
-        val effectRow = client.sql(UPDATE_STUDENT_QUERY)
+    override suspend fun update(data: Students) {
+        client.sql(UPDATE_STUDENT_QUERY)
             .bindValues(paramMap(data))
             .fetch()
             .awaitRowsUpdated()
-        if (effectRow > 0)
-            return data
-        else throw RuntimeException("Update operation failed or no rows were affected.")
     }
 
     override suspend fun getById(id: Long): Students? {
@@ -83,7 +75,4 @@ class StudentRepositoryImp (
             majorID = row.get("major_id", Int::class.java)!!,
             generation = row.get("generation", Int::class.java)!!
     )
-
-
-
 }

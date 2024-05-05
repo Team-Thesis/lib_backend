@@ -11,7 +11,6 @@ import sru.edu.sru_lib_management.auth.data.repository.AuthRepositoryImp
 import sru.edu.sru_lib_management.auth.domain.model.Role
 import sru.edu.sru_lib_management.auth.domain.model.User
 import sru.edu.sru_lib_management.auth.domain.model.UserDetailImp
-import sru.edu.sru_lib_management.core.util.SaveCallBack
 
 @Service
 class AuthService(
@@ -21,7 +20,7 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    suspend fun register(request: AuthRequest, callBack: SaveCallBack): Boolean {
+    suspend fun register(request: AuthRequest): Boolean {
         try {
             if (repository.findUserByUsername(request.username).isPresent) {
                 return false
@@ -32,7 +31,7 @@ class AuthService(
                 passwordEncoder.encode(request.password),
                 Role.ROLE_USER
             )
-            repository.save(user, callBack)
+            repository.save(user)
             return true
         } catch (e: Exception) {
             AuthResponse("false register")
