@@ -1,0 +1,33 @@
+server:
+  port: 8090
+spring:
+  main:
+    allow-circular-references: true
+  application:
+    name: sru_lib_management
+  datasource:
+    url: jdbc:mysql://localhost:3306/sru_library
+    username: root
+    password: Lo01@reak111102
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
+        #dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+  sql:
+    init:
+      mode: always
+      continue-on-error: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 858341781268-jn69k98kptdq2ta3mgciuaiio1jhdvs7.apps.googleusercontent.com
+            client-secret: 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
