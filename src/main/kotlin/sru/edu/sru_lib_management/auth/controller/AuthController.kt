@@ -9,6 +9,8 @@ import sru.edu.sru_lib_management.auth.dao.AuthRequest
 import sru.edu.sru_lib_management.auth.dao.AuthResponse
 import sru.edu.sru_lib_management.auth.data.repository.AuthRepositoryImp
 import sru.edu.sru_lib_management.auth.domain.service.AuthService
+import sru.edu.sru_lib_management.core.util.CallBack
+import java.util.Objects
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -17,6 +19,15 @@ class AuthController {
     @Autowired private val service: AuthService? = null
     private val passwordEncoder: PasswordEncoder? = null
     private val repository: AuthRepositoryImp? = null
+
+    val callBack = object : CallBack{
+        override fun onSuccess() {
+            ResponseEntity.status(HttpStatus.CREATED).build<Any>()
+        }
+        override fun onFailure(error: String) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error)
+        }
+    }
 
     @GetMapping("/hello")
     fun role(): ResponseEntity<String> {
@@ -30,7 +41,7 @@ class AuthController {
         val isPasswordTooShort = request.password.length < 8
         if (areFieldsBlank || isPasswordTooShort)
             return ResponseEntity.status(HttpStatus.CONFLICT).body(AuthResponse("Fields can not be blank and Password can not less than 8"))
-        val isSuccess = service!!.register(request)
+        val isSuccess = service!!.register(request, callBack)
         if (!isSuccess)
             return ResponseEntity.status(HttpStatus.CONFLICT).body(AuthResponse("Username already exists"))
         return ResponseEntity.ok(AuthResponse("Success!"))

@@ -10,18 +10,19 @@ import sru.edu.sru_lib_management.core.data.query.BookQuery.SAVE_BOOK_QUERY
 import sru.edu.sru_lib_management.core.data.query.BookQuery.UPDATE_BOOK_QUERY
 import sru.edu.sru_lib_management.core.data.query.StudentQuery.GET_STUDENTS_QUERY
 import sru.edu.sru_lib_management.core.domain.model.Books
-import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.BookRepository
+
 
 @Component
 class BookRepositoryImp(
     private val client: DatabaseClient
 ) : BookRepository {
+
     override suspend fun save(data: Books) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(data: Books): Books {
+    override suspend fun update(data: Books) {
         TODO("Not yet implemented")
     }
 

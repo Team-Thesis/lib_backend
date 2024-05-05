@@ -21,7 +21,6 @@ class StudentService(
             callBack.onFailure("Error occurred while saving student: ${e.message}")
         }
     }
-
     override suspend fun updateStudent(students: Students, callBack: CallBack) {
         val student = studentParam(students)
         return try {
@@ -30,25 +29,19 @@ class StudentService(
         }catch (e: Exception){
             callBack.onFailure("Error occurred while update student: ${e.message}")
         }
-
-
     }
-
     override suspend fun deleteStudent(studentID: Long): Boolean {
-        return repository.delete(studentID)
+        TODO("Not yet implemented")
     }
 
     override fun getStudents(): Flow<Students> {
         return repository.getAll()
     }
 
-
     override suspend fun getStudent(studentID: Long): Students? {
         return repository.getById(studentID)
     }
 
-
-    ///
     private fun studentParam(students: Students): Students = Students(
         students.studentID,
         students.studentName,
@@ -58,4 +51,5 @@ class StudentService(
         students.majorID,
         students.generation
     )
+
 }

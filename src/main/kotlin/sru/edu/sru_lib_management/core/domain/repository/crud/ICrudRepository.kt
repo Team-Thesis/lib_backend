@@ -1,5 +1,4 @@
 package sru.edu.sru_lib_management.core.domain.repository.crud
-
 import kotlinx.coroutines.flow.Flow
 
 interface ICrudRepository<T, Any> {

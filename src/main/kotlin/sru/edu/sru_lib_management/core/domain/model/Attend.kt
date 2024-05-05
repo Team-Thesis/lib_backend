@@ -4,10 +4,10 @@ import java.sql.Timestamp
 import java.time.LocalDate
 
 data class Attend (
-    var attendID: Long?,
-    var studentID: Long,
-    var entryTimes: Timestamp,
-    var exitingTimes: Timestamp,
-    var date: LocalDate,
-    var purpose: String
+    val attendID: Long?,
+    val studentID: Long,
+    val entryTimes: Timestamp,
+    val exitingTimes: Timestamp,
+    val date: LocalDate,
+    val purpose: String
 )

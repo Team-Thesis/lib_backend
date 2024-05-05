@@ -25,7 +25,7 @@ class AuthRepositoryImp(
 
     }
 
-    override suspend fun update(data: User): User {
+    override suspend fun update(data: User) {
         TODO("Not yet implemented")
     }
 

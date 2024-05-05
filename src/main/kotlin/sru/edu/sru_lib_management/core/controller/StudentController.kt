@@ -15,7 +15,6 @@ import sru.edu.sru_lib_management.core.util.CallBack
 class StudentController(
     private val service: StudentService
 ) {
-
     val callBack = object : CallBack{
         override fun onSuccess() {
             ResponseEntity.status(HttpStatus.CREATED).build<Any>()
@@ -65,7 +64,10 @@ class StudentController(
      */
     @PostMapping("/{studentID}")
     @ResponseBody
-    suspend fun updateStudent(@RequestBody student: Students, @PathVariable studentID: Long): ResponseEntity<Students> {
+    suspend fun updateStudent(
+        @RequestBody student: Students,
+        @PathVariable studentID: Long
+    ): ResponseEntity<Students> {
         service.updateStudent(student.copy(studentID = studentID), callBack)
         return ResponseEntity.status(HttpStatus.OK).build()
     }

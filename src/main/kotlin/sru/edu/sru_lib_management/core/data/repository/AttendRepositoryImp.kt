@@ -4,8 +4,9 @@ import io.r2dbc.spi.Row
 import kotlinx.coroutines.flow.Flow
 import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Component
-import sru.edu.sru_lib_management.core.data.query.AttendQuery.DELETE_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ALL_ATTEND_QUERY
+import org.springframework.r2dbc.core.DatabaseClient
+import sru.edu.sru_lib_management.core.data.query.AttendQuery
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.SAVE_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_ATTEND_QUERY
@@ -59,7 +60,7 @@ class AttendRepositoryImp(
     }
 
     override suspend fun delete(id: Long): Boolean {
-        val affectRow = client.sql(DELETE_ATTEND_QUERY)
+        val affectRow = client.sql(AttendQuery.DELETE_ATTEND_QUERY)
             .bind("attendID", id)
             .fetch()
             .awaitRowsUpdated()

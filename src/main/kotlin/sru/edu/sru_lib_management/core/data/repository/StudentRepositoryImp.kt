@@ -13,6 +13,7 @@ import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.StudentRepository
 import sru.edu.sru_lib_management.core.util.APIException
 import sru.edu.sru_lib_management.core.util.CallBack
+
 import java.time.LocalDate
 
 @Component
@@ -34,6 +35,7 @@ class StudentRepositoryImp (
             .bindValues(paramMap(data))
             .fetch()
             .awaitRowsUpdated()
+
     }
 
     override suspend fun getById(id: Long): Students? {
