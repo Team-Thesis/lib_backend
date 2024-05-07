@@ -1,5 +1,4 @@
 # sru_lib_kotlin
-
 # =>  What is suspend fun?
 # Suspending functions can pause their 
 # execution mid-operation and be resumed later. 

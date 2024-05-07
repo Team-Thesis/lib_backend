@@ -2,7 +2,6 @@ package sru.edu.sru_lib_management.core.controller
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
@@ -22,17 +21,23 @@ class StudentController(
      */
     @PostMapping
     @Transactional
-    suspend fun saveStudent(@RequestBody students: Students): Students? = coroutineScope {
-        service.saveStudent(students)
+    suspend fun saveStudent(@RequestBody students: Students): ResponseEntity<Students?> = coroutineScope {
+        val areFieldBlank = students.studentID == null || students.studentName.isBlank() || students.gender.isBlank()
+        if (!areFieldBlank){
+            val student = service.saveStudent(students)
+            ResponseEntity(student, HttpStatus.CREATED)
+        }
+        else
+            ResponseEntity.badRequest().body(null)
     }
 
     @GetMapping
-    suspend fun getAllStudents(): ResponseEntity<Flow<Students>> {
+    suspend fun getAllStudents(): ResponseEntity<Flow<Students>> = coroutineScope {
         /*
          * Get all students from database
          */
-        val getStudents = service.getStudents()
-        return ResponseEntity(getStudents, HttpStatus.OK)
+        val getAllStudent = service.getStudents()
+        ResponseEntity(getAllStudent, HttpStatus.OK)
     }
 
     /*
@@ -42,14 +47,14 @@ class StudentController(
     @ResponseBody
     suspend fun getStudentById(
         @PathVariable studentID: Long
-    ): ResponseEntity<Students> {
+    ): ResponseEntity<Students> = coroutineScope{
         // get student
         val student = service.getStudent(studentID)
-        return if (student != null) {
+        if (student != null)
             ResponseEntity(student, HttpStatus.OK)
-        } else {
+        else
             ResponseEntity(HttpStatus.NOT_FOUND)
-        }
+
     }
 
     /*

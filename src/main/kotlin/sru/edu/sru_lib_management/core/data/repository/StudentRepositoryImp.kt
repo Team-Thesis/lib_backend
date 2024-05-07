@@ -43,7 +43,7 @@ class StudentRepositoryImp (
             .bind("studentID", id)
             .map { row: Row, _ ->
                 row.mapToStudent()
-            }.awaitSingle()
+            }.awaitOneOrNull()
     }
 
     override fun getAll(): Flow<Students>  {
@@ -61,6 +61,7 @@ class StudentRepositoryImp (
             .fetch()
             .awaitRowsUpdated()
     }
+
 
     private fun paramMap(students: Students): Map<String, Any> = mapOf(
         "studentID" to students.studentID!!,

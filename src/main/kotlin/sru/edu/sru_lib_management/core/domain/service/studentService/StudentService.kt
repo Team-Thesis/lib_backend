@@ -12,24 +12,36 @@ class StudentService(
 ) : IStudentService {
 
     override suspend fun saveStudent(students: Students): Students?{
-        return try {
-            repository.save(data = students)
-        }catch (e: Exception){
-           null
-        }
+        return runCatching {
+            repository.save(students)
+        }.fold(
+            onSuccess = {student ->
+                student
+            },
+            onFailure = {e ->
+                e.message
+                null
+            }
+        )
     }
-    override suspend fun updateStudent(students: Students): Students? {
-        return try {
-            repository.update(students)
 
-        }catch (e: Exception){
-            null
-        }
+    override suspend fun updateStudent(students: Students): Students? {
+        return runCatching {
+            repository.update(students)
+        }.fold(
+            onSuccess = {
+                it
+            },
+            onFailure = {e ->
+                e.message
+                null
+            }
+        )
     }
     override suspend fun deleteStudent(studentID: Long): Boolean {
         return try {
-            val isSuccess = repository.delete(studentID)
-            isSuccess
+            repository.delete(studentID)
+            true
         }catch (e: Exception){
             false
         }
@@ -42,5 +54,6 @@ class StudentService(
     override suspend fun getStudent(studentID: Long): Students? {
         return repository.getById(studentID)
     }
+
 
 }
