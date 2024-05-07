@@ -20,11 +20,11 @@ class BorrowBookRepositoryImp(
         TODO("Not yet implemented")
     }
 
-    override suspend fun save(data: BorrowBook) {
+    override suspend fun save(entity: BorrowBook): BorrowBook {
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(data: BorrowBook) {
+    override suspend fun update(entity: BorrowBook): BorrowBook {
         TODO("Not yet implemented")
     }
 
@@ -36,7 +36,7 @@ class BorrowBookRepositoryImp(
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(id: Long): Boolean {
+    override suspend fun delete(id: Long) {
         TODO("Not yet implemented")
     }
 

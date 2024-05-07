@@ -18,11 +18,11 @@ class BookRepositoryImp(
     private val client: DatabaseClient
 ) : BookRepository {
 
-    override suspend fun save(data: Books) {
+    override suspend fun save(entity: Books): Books {
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(data: Books) {
+    override suspend fun update(entity: Books): Books {
         TODO("Not yet implemented")
     }
 
@@ -43,7 +43,7 @@ class BookRepositoryImp(
             }.flow()
     }
 
-    override suspend fun delete(id: Long): Boolean {
+    override suspend fun delete(id: Long) {
         TODO("Not yet implemented")
     }
 

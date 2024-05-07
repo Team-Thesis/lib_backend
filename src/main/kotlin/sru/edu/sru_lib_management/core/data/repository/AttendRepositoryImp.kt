@@ -2,6 +2,7 @@ package sru.edu.sru_lib_management.core.data.repository
 
 import io.r2dbc.spi.Row
 import kotlinx.coroutines.flow.Flow
+import org.springframework.data.r2dbc.repository.R2dbcRepository
 import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ALL_ATTEND_QUERY
@@ -23,48 +24,46 @@ class AttendRepositoryImp(
 
     override fun getCustomAttend(date: Date): Flow<Attend> = client
         .sql(GET_ATTEND_QUERY)
-            .map { row ->
-                rowAttendMap(row as Row)
+            .map { row: Row, _ ->
+                row.mapToAttend()
             }
             .flow()
 
-
-    override suspend fun save(data: Attend) {
+    override suspend fun save(entity: Attend): Attend {
         client.sql(SAVE_ATTEND_QUERY)
-            .bindValues(paramMap(data))
+            .bindValues(paramMap(entity))
             .await()
+        return entity
     }
 
-    override suspend fun update(data: Attend) {
+    override suspend fun update(entity: Attend): Attend {
         client.sql(UPDATE_ATTEND_QUERY)
-            .bindValues(paramMap(data))
+            .bindValues(paramMap(entity))
             .fetch()
             .awaitRowsUpdated()
+        return entity
     }
 
     override suspend fun getById(id: Long): Attend? {
         return client.sql(GET_ATTEND_QUERY)
             .bind("attendID", id)
-            .map { row ->
-                rowAttendMap(row as Row)
-            }
-            .awaitSingle()
+            .map { row: Row, _ ->
+                row.mapToAttend()
+            }.awaitSingle()
     }
 
     override fun getAll(): Flow<Attend> {
         return client.sql(GET_ALL_ATTEND_QUERY)
-            .map { row ->
-                rowAttendMap(row as Row)
-            }
-            .flow()
+            .map { row: Row, _ ->
+                row.mapToAttend()
+            }.flow()
     }
 
-    override suspend fun delete(id: Long): Boolean {
-        val affectRow = client.sql(AttendQuery.DELETE_ATTEND_QUERY)
+    override suspend fun delete(id: Long) {
+        client.sql(AttendQuery.DELETE_ATTEND_QUERY)
             .bind("attendID", id)
             .fetch()
             .awaitRowsUpdated()
-        return affectRow > 0
     }
 
 
@@ -77,12 +76,12 @@ class AttendRepositoryImp(
         "purpose" to attend.purpose
     )
 
-    private fun rowAttendMap(row: Row): Attend = Attend(
-        attendID = row.get("attend_id", Long::class.java)!!,
-        studentID = row.get("student_id", Long::class.java)!!,
-        entryTimes = row.get("entry_times", Timestamp::class.java)!!,
-        exitingTimes = row.get("exiting_times", Timestamp::class.java)!!,
-        date = row.get("date", LocalDate::class.java)!!,
-        purpose = row.get("purpose", String::class.java)!!
+    private fun Row.mapToAttend(): Attend = Attend(
+        attendID = this.get("attend_id", Long::class.java)!!,
+        studentID = this.get("student_id", Long::class.java)!!,
+        entryTimes = this.get("entry_times", Timestamp::class.java)!!,
+        exitingTimes = this.get("exiting_times", Timestamp::class.java)!!,
+        date = this.get("date", LocalDate::class.java)!!,
+        purpose = this.get("purpose", String::class.java)!!
     )
 }

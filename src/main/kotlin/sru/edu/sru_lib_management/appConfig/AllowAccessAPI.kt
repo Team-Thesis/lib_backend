@@ -12,5 +12,4 @@ class AllowAccessAPI: WebMvcConfigurer {
                 .allowedOrigins("url_react")
                 .allowedMethods("PUT", "POST", "DELETE", "GET")
     }
-
 }

@@ -1,10 +1,14 @@
 package sru.edu.sru_lib_management.core.domain.repository.crud
 import kotlinx.coroutines.flow.Flow
+import org.springframework.data.repository.NoRepositoryBean
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-interface ICrudRepository<T, Any> {
-    suspend fun save(data: T)
-    suspend fun update(data: T)
-    suspend fun getById(id: Any): T?
+@NoRepositoryBean
+interface ICrudRepository<T, ID> {
+    suspend fun save(entity: T): T
+    suspend fun update(entity: T): T
+    suspend fun getById(id: ID): T?
     fun getAll(): Flow<T>
-    suspend fun delete(id: Any): Boolean
+    suspend fun delete(id: ID)
 }
+

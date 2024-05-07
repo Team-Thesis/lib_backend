@@ -5,33 +5,34 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.StudentRepository
-import sru.edu.sru_lib_management.core.util.CallBack
 
 @Service
 class StudentService(
    @Qualifier("studentRepositoryImp") private val repository: StudentRepository
 ) : IStudentService {
 
-    override suspend fun saveStudent(students: Students, callBack: CallBack) {
-        val student = studentParam(students)
+    override suspend fun saveStudent(students: Students): Students?{
         return try {
-            repository.save(data = student)
-            callBack.onSuccess()
+            repository.save(data = students)
         }catch (e: Exception){
-            callBack.onFailure("Error occurred while saving student: ${e.message}")
+           null
         }
     }
-    override suspend fun updateStudent(students: Students, callBack: CallBack) {
-        val student = studentParam(students)
+    override suspend fun updateStudent(students: Students): Students? {
         return try {
-            repository.update(student)
-            callBack.onSuccess()
+            repository.update(students)
+
         }catch (e: Exception){
-            callBack.onFailure("Error occurred while update student: ${e.message}")
+            null
         }
     }
     override suspend fun deleteStudent(studentID: Long): Boolean {
-        TODO("Not yet implemented")
+        return try {
+            val isSuccess = repository.delete(studentID)
+            isSuccess
+        }catch (e: Exception){
+            false
+        }
     }
 
     override fun getStudents(): Flow<Students> {
@@ -41,15 +42,5 @@ class StudentService(
     override suspend fun getStudent(studentID: Long): Students? {
         return repository.getById(studentID)
     }
-
-    private fun studentParam(students: Students): Students = Students(
-        students.studentID,
-        students.studentName,
-        students.gender,
-        students.dateOfBirth,
-        students.degreeLevelID,
-        students.majorID,
-        students.generation
-    )
 
 }

@@ -12,15 +12,20 @@ import sru.edu.sru_lib_management.core.util.CallBack
 class AttendServiceImp(
     @Qualifier("attendRepositoryImp") private val repository: AttendRepository
 ) : AttendService{
-    override suspend fun saveAttend(students: Students, callBack: CallBack) {
+    override suspend fun saveAttend(attend: Attend): Attend? {
+        return try {
+            repository.save(attend)
+
+        }catch (e: Exception){
+            null
+        }
+    }
+
+    override suspend fun updateAttend(attend: Attend): Attend? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateAttend(students: Students, callBack: CallBack) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteAttend(studentID: Long): Boolean? {
+    override suspend fun deleteAttend(attendID: Long): Boolean{
         TODO("Not yet implemented")
     }
 
@@ -28,7 +33,8 @@ class AttendServiceImp(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getAttend(studentID: Long): Attend {
+    override suspend fun getAttend(attendID: Long): Attend {
         TODO("Not yet implemented")
     }
+
 }
