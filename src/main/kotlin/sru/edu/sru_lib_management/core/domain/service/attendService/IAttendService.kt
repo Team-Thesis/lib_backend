@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.util.Result
 
-interface AttendService {
-    suspend fun saveAttend(attend: Attend, studentId: Long): Result<Attend?>
+interface IAttendService {
+    suspend fun saveAttend(attend: Attend): Result<Attend?>
     suspend fun updateAttend(attend: Attend): Result<Attend?>
     suspend fun deleteAttend(attendID: Long): Result<Boolean>
     fun getAllAttend(): Result<Flow<Attend>>

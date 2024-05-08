@@ -23,20 +23,23 @@ class StudentController(
      */
     @PostMapping
     @Transactional
-    suspend fun saveStudent(@RequestBody students: Students): ResponseEntity<Any> = coroutineScope {
+    suspend fun saveStudent(
+        @RequestBody students: Students
+    ): ResponseEntity<Students?> = coroutineScope {
         val areFieldBlank = students.studentID == null || students.studentName.isBlank() || students.gender.isBlank()
         if (!areFieldBlank){
-            when(val saveResult = service.saveStudent(students)){
-                is Result.Success -> ResponseEntity.ok().body(saveResult.data)
-                is Result.Failure -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(saveResult.errorMsg)
+            when(val result = service.saveStudent(students)){
+                is Result.Success -> ResponseEntity(result.data, HttpStatus.CREATED)
+                is Result.Failure -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
         else
-            ResponseEntity.badRequest().body("One or more fields are blank.")
+            ResponseEntity(HttpStatus.CONFLICT)
     }
 
     // Get all student using flux as flow
     @GetMapping
+    @FlowPreview
     suspend fun getAllStudents(): ResponseEntity<Flow<Students>> = coroutineScope {
         when(val result = service.getStudents()){
             is Result.Success -> ResponseEntity.ok().body(result.data)
@@ -67,8 +70,11 @@ class StudentController(
     suspend fun updateStudent(
         @RequestBody student: Students,
         @PathVariable studentID: Long
-    ) {
-        service.updateStudent(student.copy(studentID = studentID))
+    ): ResponseEntity<Students> = coroutineScope {
+        when(val result = service.updateStudent(student.copy(studentID = studentID))){
+            is Result.Success -> ResponseEntity.ok().body(result.data)
+            is Result.Failure -> ResponseEntity.badRequest().build()
+        }
     }
 
     /*
