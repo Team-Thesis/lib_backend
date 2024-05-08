@@ -1,5 +1,6 @@
 package sru.edu.sru_lib_management.core.controller
 
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.service.studentService.StudentService
+import sru.edu.sru_lib_management.core.util.CUDResult
 
 
 @RestController
@@ -21,27 +23,28 @@ class StudentController(
      */
     @PostMapping
     @Transactional
-    suspend fun saveStudent(@RequestBody students: Students): ResponseEntity<Students?> = coroutineScope {
+    suspend fun saveStudent(@RequestBody students: Students): ResponseEntity<Any> = coroutineScope {
         val areFieldBlank = students.studentID == null || students.studentName.isBlank() || students.gender.isBlank()
         if (!areFieldBlank){
-            val student = service.saveStudent(students)
-            ResponseEntity(student, HttpStatus.CREATED)
+            when(val saveResult = service.saveStudent(students)){
+                is CUDResult.Success -> ResponseEntity.ok().body(saveResult.successMsg)
+                is CUDResult.Failure -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(saveResult.errorMsg)
+            }
         }
         else
-            ResponseEntity.badRequest().body(null)
+            ResponseEntity.badRequest().body("One or more fields are blank.")
     }
 
+    // Get all student using flux as flow
     @GetMapping
+    @FlowPreview
     suspend fun getAllStudents(): ResponseEntity<Flow<Students>> = coroutineScope {
-        /*
-         * Get all students from database
-         */
         val getAllStudent = service.getStudents()
         ResponseEntity(getAllStudent, HttpStatus.OK)
     }
 
     /*
-     * get student from database
+     * get student from database by id
      */
     @GetMapping("/{studentID}")
     @ResponseBody
@@ -74,6 +77,9 @@ class StudentController(
      */
     @PostMapping("/delete/{studentID}")
     suspend fun deleteStudent(@PathVariable studentID: Long) {
-        service.deleteStudent(studentID)
+        when(val result = service.deleteStudent(studentID)){
+            is CUDResult.Success -> ResponseEntity.ok().body(result.successMsg)
+            is CUDResult.Failure -> ResponseEntity.badRequest().body(result.errorMsg)
+        }
     }
 }

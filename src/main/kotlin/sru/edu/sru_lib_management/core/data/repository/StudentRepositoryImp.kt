@@ -2,6 +2,7 @@ package sru.edu.sru_lib_management.core.data.repository
 
 import io.r2dbc.spi.Row
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -51,7 +52,8 @@ class StudentRepositoryImp (
             .map { row: Row, _ ->
                 row.mapToStudent()
             }
-            .flow()
+            .all()
+            .asFlow()
     }
 
     @Transactional

@@ -5,7 +5,7 @@ import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.model.Students
 
 interface AttendService {
-    suspend fun saveAttend(attend: Attend): Attend?
+    suspend fun saveAttend(attend: Attend, studentId: Long): Attend?
     suspend fun updateAttend(attend: Attend): Attend?
     suspend fun deleteAttend(attendID: Long): Boolean
     fun getAllAttend(): Flow<Students>

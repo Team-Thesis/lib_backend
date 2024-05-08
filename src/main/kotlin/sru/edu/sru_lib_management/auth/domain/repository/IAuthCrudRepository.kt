@@ -1,6 +1,5 @@
 package sru.edu.sru_lib_management.auth.domain.repository
 import org.springframework.stereotype.Component
-import sru.edu.sru_lib_management.core.util.CallBack
 
 @Component
 interface IAuthCrudRepository<T, ID> {

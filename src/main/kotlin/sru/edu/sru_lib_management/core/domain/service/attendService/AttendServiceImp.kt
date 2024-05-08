@@ -6,16 +6,14 @@ import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
-import sru.edu.sru_lib_management.core.util.CallBack
 
 @Service
 class AttendServiceImp(
     @Qualifier("attendRepositoryImp") private val repository: AttendRepository
 ) : AttendService{
-    override suspend fun saveAttend(attend: Attend): Attend? {
+    override suspend fun saveAttend(attend: Attend, studentId: Long): Attend? {
         return try {
-            repository.save(attend)
-
+            repository.save(attend.copy(studentID = studentId))
         }catch (e: Exception){
             null
         }

@@ -5,46 +5,49 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.StudentRepository
+import sru.edu.sru_lib_management.core.util.CUDResult
 
 @Service
 class StudentService(
    @Qualifier("studentRepositoryImp") private val repository: StudentRepository
 ) : IStudentService {
 
-    override suspend fun saveStudent(students: Students): Students?{
+    override suspend fun saveStudent(students: Students): CUDResult{
         return runCatching {
             repository.save(students)
         }.fold(
-            onSuccess = {student ->
-                student
+            onSuccess = { student ->
+                CUDResult.Success(student)
             },
-            onFailure = {e ->
-                e.message
-                null
+            onFailure = { e ->
+                CUDResult.Failure(e.message ?: "Unknown error occurred.")
             }
         )
     }
 
-    override suspend fun updateStudent(students: Students): Students? {
+    override suspend fun updateStudent(students: Students): CUDResult {
         return runCatching {
             repository.update(students)
         }.fold(
             onSuccess = {
-                it
+                CUDResult.Success(students)
             },
             onFailure = {e ->
-                e.message
-                null
+                CUDResult.Failure(e.message ?: "Unknown error occurred.")
             }
         )
     }
-    override suspend fun deleteStudent(studentID: Long): Boolean {
-        return try {
+    override suspend fun deleteStudent(studentID: Long): CUDResult {
+        return kotlin.runCatching {
             repository.delete(studentID)
-            true
-        }catch (e: Exception){
-            false
-        }
+        }.fold(
+            onSuccess = {
+                CUDResult.Success(true)
+            },
+            onFailure = { e ->
+                CUDResult.Failure(e.message ?: "Unknown error occurred.")
+            }
+        )
     }
 
     override fun getStudents(): Flow<Students> {
