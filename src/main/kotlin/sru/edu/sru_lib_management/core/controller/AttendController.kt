@@ -1,10 +1,12 @@
 package sru.edu.sru_lib_management.core.controller
 
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -40,6 +42,14 @@ class AttendController(
         when(val result = service.updateAttend(attend.copy(attendID = attId))){
             is Result.Success -> ResponseEntity(result.data, HttpStatus.ACCEPTED)
             is Result.Failure -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @GetMapping
+    suspend fun getAllAttend(): ResponseEntity<Flow<Attend>> = coroutineScope {
+        when(val result = service.getAllAttend()){
+            is Result.Success -> ResponseEntity(result.data, HttpStatus.OK)
+            is Result.Failure -> ResponseEntity(HttpStatus.BAD_REQUEST)
         }
     }
 

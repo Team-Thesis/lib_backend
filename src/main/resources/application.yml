@@ -14,10 +14,3 @@ spring:
     init:
       mode: always
       continue-on-error: false
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 858341781268-jn69k98kptdq2ta3mgciuaiio1jhdvs7.apps.googleusercontent.com
-            client-secret: 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

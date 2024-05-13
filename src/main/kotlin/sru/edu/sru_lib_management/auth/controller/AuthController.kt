@@ -5,18 +5,20 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
-import sru.edu.sru_lib_management.auth.dao.AuthRequest
-import sru.edu.sru_lib_management.auth.dao.AuthResponse
-import sru.edu.sru_lib_management.auth.data.repository.AuthRepositoryImp
+import sru.edu.sru_lib_management.auth.data.repository.AuthRepository
+import sru.edu.sru_lib_management.auth.domain.dao.AuthRequest
+import sru.edu.sru_lib_management.auth.domain.dao.AuthResponse
 import sru.edu.sru_lib_management.auth.domain.service.AuthService
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthController {
+class AuthController(
+    private val repository: AuthRepository,
+    private val service: AuthService
+) {
 
-    @Autowired private val service: AuthService? = null
+    @Autowired
     private val passwordEncoder: PasswordEncoder? = null
-    private val repository: AuthRepositoryImp? = null
 
     @GetMapping("/hello")
     fun role(): ResponseEntity<String> {
@@ -24,28 +26,38 @@ class AuthController {
     }
 
     @PostMapping("/register")
-    suspend fun register(@RequestBody request: AuthRequest): ResponseEntity<AuthResponse> {
+    suspend fun register(
+        @RequestBody request: AuthRequest
+    ): ResponseEntity<String> {
         // Check all fields and password length
         val areFieldsBlank = request.username.isBlank() || request.password.isBlank()
         val isPasswordTooShort = request.password.length < 8
-        if (areFieldsBlank || isPasswordTooShort)
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(AuthResponse("Fields can not be blank and Password can not less than 8"))
-        val isSuccess = service!!.register(request)
-        if (!isSuccess)
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(AuthResponse("Username already exists"))
-        return ResponseEntity.ok(AuthResponse("Success!"))
 
+        if (areFieldsBlank || isPasswordTooShort)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Fields can not be blank and Password can not less than 8")
+        if (repository.findUserByUsername(request.username) != null)
+            return ResponseEntity.badRequest().body("Username already exist.")
+        /// Save User
+        return ResponseEntity(service.register(request), HttpStatus.CREATED)
     }
 
     @PostMapping("/authenticate")
-    suspend fun authenticate(@RequestBody request: AuthRequest): ResponseEntity<AuthResponse> {
-        /// Check user null or not if its null
-        val user = repository!!.findUserByUsername(request.username).orElseThrow()
+    suspend fun authenticate(
+        @RequestBody request: AuthRequest
+    ): ResponseEntity<AuthResponse>{
+
+        // Check user null or not if its null
+        val user = repository.findUserByUsername(request.username)
+             ?: return ResponseEntity.status(HttpStatus.CONFLICT).body(AuthResponse("Username not found. Register first."))
         // if password is not null check password match or not
+
         val isPasswordMatch = passwordEncoder!!.matches(request.password, user.password)
+
+        println(isPasswordMatch)
+
         if (!isPasswordMatch)
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(AuthResponse("Incorrect password."))
-        // if everything perfect authenticate user and return token
-        return ResponseEntity.ok(service!!.authenticate(request))
+            return ResponseEntity.badRequest().build()
+
+        return ResponseEntity(service.authenticate(request), HttpStatus.OK)
     }
 }

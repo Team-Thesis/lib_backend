@@ -7,13 +7,13 @@ import org.springframework.security.core.userdetails.UserDetails
 class UserDetailImp(
     user: User
 ) : UserDetails {
+
     private val username: String = user.username
     private val password: String = user.password
     private val roles: Role = user.roles
 
-
-    override fun getAuthorities(): Collection<GrantedAuthority?> {
-        return listOf(SimpleGrantedAuthority(roles.name))
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority?> {
+        return mutableListOf(SimpleGrantedAuthority(roles.name))
     }
 
     override fun getPassword(): String {

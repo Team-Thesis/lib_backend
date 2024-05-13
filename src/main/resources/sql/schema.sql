@@ -2,7 +2,6 @@ create schema if not exists sru_library;
 
 Use sru_library;
 Set names 'UTF8MB4';
-
 #1
 #========================================================
 # crate table degree level
@@ -131,8 +130,7 @@ create table if not exists book_sponsors(
 create table if not exists users(
     user_id bigint auto_increment primary key not null ,
     username varchar(50) unique not null ,
-    password varchar(30) not null ,
+    password varchar(255) not null ,
     roles enum('ROLE_USER', 'ROLE_ADMIN') not null
 );
-
 

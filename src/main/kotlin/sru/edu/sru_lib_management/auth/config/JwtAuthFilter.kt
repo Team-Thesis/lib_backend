@@ -15,10 +15,10 @@ import org.springframework.web.filter.OncePerRequestFilter
 import sru.edu.sru_lib_management.auth.domain.service.JwtService
 
 @Component
-class JwtAuthFilter @Autowired constructor(
-    private val jwtService: JwtService
+class JwtAuthFilter(
+    private val jwtService: JwtService,
 ) : OncePerRequestFilter() {
-    // Field injection
+
     @Autowired private lateinit var userDetailsService: UserDetailsService
 
     override fun doFilterInternal(
@@ -26,18 +26,17 @@ class JwtAuthFilter @Autowired constructor(
         @NonNull response: HttpServletResponse,
         @NonNull filterChain: FilterChain
     ) {
-        val authHeader: String? = request.getHeader("Authorization")
+        val authHeader = request.getHeader("Authorization")
         var token: String? = null
         var username: String? = null
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
             token = authHeader.substring(7)
             username = jwtService.extractEmail(token)
         }
-
-        if (username != null && SecurityContextHolder.getContext().authentication == null) {
+        if (username != null && SecurityContextHolder.getContext().authentication == null){
             val userDetails: UserDetails = userDetailsService.loadUserByUsername(username)
-            if (jwtService.validateToken(token, userDetails)) {
+            if (jwtService.validateToken(token, userDetails)){
                 val authenticationToken = UsernamePasswordAuthenticationToken(
                     userDetails,
                     null,

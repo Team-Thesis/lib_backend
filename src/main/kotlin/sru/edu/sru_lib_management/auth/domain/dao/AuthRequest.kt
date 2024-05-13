@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.auth.dao
+package sru.edu.sru_lib_management.auth.domain.dao
 
 data class AuthRequest(
     val username: String,

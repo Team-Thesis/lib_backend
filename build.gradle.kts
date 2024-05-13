@@ -27,7 +27,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    //implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -35,6 +35,7 @@ dependencies {
     //runtimeOnly("io.r2dbc:r2dbc-mysql")
     implementation("io.r2dbc:r2dbc-spi:1.0.0.RELEASE")
     implementation("io.asyncer:r2dbc-mysql:1.1.3")
+    implementation("org.projectlombok:lombok")
     runtimeOnly("com.mysql:mysql-connector-j")
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
