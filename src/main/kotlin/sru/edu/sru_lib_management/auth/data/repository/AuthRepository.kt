@@ -25,7 +25,7 @@ class AuthRepository(
             .awaitRowsUpdated()
     }
 
-    override fun findUserByUsername(username: String): User? {
+    override suspend fun findUserByUsername(username: String): User? {
         return runBlocking {
             client.sql(FIND_USER_BY_USERNAME)
                 .bind("username", username)

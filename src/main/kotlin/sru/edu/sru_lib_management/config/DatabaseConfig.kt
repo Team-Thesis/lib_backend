@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.appConfig
+package sru.edu.sru_lib_management.config
 
 import io.asyncer.r2dbc.mysql.MySqlConnectionConfiguration
 import io.asyncer.r2dbc.mysql.MySqlConnectionFactory

@@ -62,8 +62,10 @@ create table if not exists language(
 # crate table books
 #Drop table if exists books;
 create table if not exists books(
-    book_id bigint primary key auto_increment,
+    book_id varchar(10) primary key,
     book_title varchar(100),
+    number int not null,
+    sponsor_id int null,
     language_id int,
     college_id int,
     book_type varchar(100),
@@ -80,7 +82,7 @@ create table if not exists books(
 #Drop table if exists borrow_books;
 Create table if not exists borrow_books(
     borrow_id int primary key auto_increment,
-    book_id bigint not null ,
+    book_id varchar(10) not null ,
     student_id bigint not null ,
     borrow_date date not null ,
     give_back_date date,
@@ -117,7 +119,7 @@ create table if not exists guests(
 create table if not exists book_sponsors(
     sponsor_id int primary key auto_increment,
     sponsor_name varchar(50) not null ,
-    book_id bigint not null ,
+    book_id varchar(10) not null ,
     book_type varchar(50) not null ,
     number_of_book int not null ,
     sponsor_date date not null,
@@ -131,6 +133,6 @@ create table if not exists users(
     user_id bigint auto_increment primary key not null ,
     username varchar(50) unique not null ,
     password varchar(255) not null ,
-    roles enum('ROLE_USER', 'ROLE_ADMIN') not null
+    roles enum('USER', 'ADMIN') not null
 );
 
