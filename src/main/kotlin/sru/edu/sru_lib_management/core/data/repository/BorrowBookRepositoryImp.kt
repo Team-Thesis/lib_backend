@@ -36,7 +36,7 @@ class BorrowBookRepositoryImp(
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: Long): Boolean {
         TODO("Not yet implemented")
     }
 

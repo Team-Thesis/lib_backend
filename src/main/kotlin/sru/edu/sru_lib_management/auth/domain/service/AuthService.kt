@@ -5,11 +5,10 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.auth.data.repository.AuthRepository
-import sru.edu.sru_lib_management.auth.domain.dao.AuthRequest
-import sru.edu.sru_lib_management.auth.domain.dao.AuthResponse
+import sru.edu.sru_lib_management.auth.domain.dto.AuthRequest
 import sru.edu.sru_lib_management.auth.domain.model.Role
 import sru.edu.sru_lib_management.auth.domain.model.User
-import sru.edu.sru_lib_management.auth.jwt.JwtTokenSupport
+import sru.edu.sru_lib_management.auth.domain.jwt.JwtTokenSupport
 import sru.edu.sru_lib_management.auth.utils.AuthResult
 
 
@@ -61,5 +60,4 @@ class AuthService(
             }
         )
     }
-
 }

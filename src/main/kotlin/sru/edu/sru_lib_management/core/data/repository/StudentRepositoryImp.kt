@@ -57,18 +57,19 @@ class StudentRepositoryImp (
     }
 
     @Transactional
-    override suspend fun delete(id: Long) {
-        client.sql(DELETE_STUDENT_QUERY)
+    override suspend fun delete(id: Long): Boolean {
+        val rowEffect = client.sql(DELETE_STUDENT_QUERY)
             .bind("studentID", id)
             .fetch()
             .awaitRowsUpdated()
+        return rowEffect > 0
     }
 
 
     private fun paramMap(students: Students): Map<String, Any> = mapOf(
         "studentID" to students.studentID!!,
         "studentName" to students.studentName,
-        "gender" to  students.dateOfBirth,
+        "gender" to  students.gender,
         "dateOfBirth" to students.dateOfBirth,
         "degreeLevelID" to students.degreeLevelID,
         "majorID" to students.majorID,

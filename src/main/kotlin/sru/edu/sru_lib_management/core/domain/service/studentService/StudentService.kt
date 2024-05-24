@@ -25,9 +25,20 @@ class StudentService(
         )
     }
 
-    override suspend fun updateStudent(students: Students): Result<Students?> {
+    override suspend fun updateStudent(studentID: Long, students: Students): Result<Students?> {
         return runCatching {
-            repository.update(students)
+            val existingStudent = repository.getById(studentID)
+                ?: return@runCatching Result.ClientError("Not found student with ID: $studentID")
+            println(existingStudent)
+            val updateStudents = existingStudent.copy(
+                studentName = students.studentName,
+                gender = students.gender,
+                dateOfBirth = students.dateOfBirth,
+                degreeLevelID = students.degreeLevelID,
+                majorID = students.majorID,
+                generation = students.generation
+            )
+            repository.update(updateStudents)
         }.fold(
             onSuccess = {
                 Result.Success(students)
@@ -38,12 +49,10 @@ class StudentService(
         )
     }
     override suspend fun deleteStudent(studentID: Long): Result<Boolean> {
-        return kotlin.runCatching {
+        return runCatching {
             repository.delete(studentID)
         }.fold(
-            onSuccess = {
-                Result.Success(true)
-            },
+            onSuccess = { Result.Success(true) },
             onFailure = { e ->
                 Result.Failure(e.message ?: "Unknown error occurred.")
             }

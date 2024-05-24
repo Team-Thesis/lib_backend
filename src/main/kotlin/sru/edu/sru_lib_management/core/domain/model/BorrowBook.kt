@@ -4,7 +4,7 @@ import java.sql.Date
 
 class BorrowBook (
     val borrowID: Long?,
-    val bookID: Long,
+    val bookID: String,
     val studentID: Long,
     val borrowDate: Date,
     val giveBackDate: Date,

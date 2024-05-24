@@ -8,6 +8,6 @@ interface ICrudRepository<T, ID> {
     suspend fun update(entity: T): T
     suspend fun getById(id: ID): T?
     fun getAll(): Flow<T>
-    suspend fun delete(id: ID)
+    suspend fun delete(id: ID): Boolean
 }
 

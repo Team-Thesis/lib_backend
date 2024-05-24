@@ -24,6 +24,7 @@ class TestEndpoint(
         return when(val result = runBlocking {studentService.getStudents()}){
             is Result.Success -> ResponseEntity.ok().body(result.data)
             is Result.Failure -> ResponseEntity.noContent().build()
+            is Result.ClientError -> ResponseEntity.badRequest().build()
         }
     }
 }

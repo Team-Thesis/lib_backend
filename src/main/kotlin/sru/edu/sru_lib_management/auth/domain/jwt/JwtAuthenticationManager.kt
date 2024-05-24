@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.auth.jwt
+package sru.edu.sru_lib_management.auth.domain.jwt
 
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono

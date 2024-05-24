@@ -17,8 +17,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import reactor.core.publisher.Mono
 import sru.edu.sru_lib_management.auth.data.repository.AuthRepository
-import sru.edu.sru_lib_management.auth.jwt.JwtAuthenticationConverter
-import sru.edu.sru_lib_management.auth.jwt.JwtAuthenticationManager
+import sru.edu.sru_lib_management.auth.domain.jwt.JwtAuthenticationConverter
+import sru.edu.sru_lib_management.auth.domain.jwt.JwtAuthenticationManager
 
 
 @Configuration

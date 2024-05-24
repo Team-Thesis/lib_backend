@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.auth.jwt
+package sru.edu.sru_lib_management.auth.domain.jwt
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -13,7 +13,7 @@ class JwtTokenSupport {
     private val secretKey = Keys.hmacShaKeyFor(SECRET.toByteArray())
     private val phaser = Jwts.parserBuilder().setSigningKey(secretKey).build()
 
-    fun generateToken(username: String): BearerToken{
+    fun generateToken(username: String): BearerToken {
         val claim: Map<String, Any> = HashMap()
         val token = Jwts.builder()
             .setClaims(claim)

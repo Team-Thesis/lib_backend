@@ -7,16 +7,18 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import sru.edu.sru_lib_management.auth.data.repository.AuthRepository
-import sru.edu.sru_lib_management.auth.domain.dao.AuthRequest
-import sru.edu.sru_lib_management.auth.domain.dao.AuthResponse
+import sru.edu.sru_lib_management.auth.domain.dto.AuthRequest
+import sru.edu.sru_lib_management.auth.domain.dto.AuthResponse
 import sru.edu.sru_lib_management.auth.domain.service.AuthService
+import sru.edu.sru_lib_management.auth.domain.service.EmailValidationService
 import sru.edu.sru_lib_management.auth.utils.AuthResult
 
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
     private val service: AuthService,
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val validationService: EmailValidationService
 ){
 
     @PostMapping("/register")
@@ -28,6 +30,15 @@ class AuthController(
         // check field
         if (areFieldBlank && isPasswordTooShort)
             return ResponseEntity.badRequest().body("Field cannot be blank, password must be greater than 8.")
+
+        // Check username or email valid or not
+        // Check if the email format and domain are valid
+        val emailValidationError = validationService.validateEmail(request.username)
+        if (emailValidationError != null) {
+            return ResponseEntity.badRequest().body(emailValidationError)
+        }
+
+
         // check username is already exist or not
         val user = repository.findUserByUsername(request.username)
         if (user != null)

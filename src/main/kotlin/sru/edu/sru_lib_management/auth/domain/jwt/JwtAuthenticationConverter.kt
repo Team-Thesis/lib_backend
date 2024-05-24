@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.auth.jwt
+package sru.edu.sru_lib_management.auth.domain.jwt
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter

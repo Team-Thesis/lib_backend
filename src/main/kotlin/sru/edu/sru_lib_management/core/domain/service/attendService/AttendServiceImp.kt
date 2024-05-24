@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
 import sru.edu.sru_lib_management.core.util.Result
+import java.sql.Time
+import java.time.LocalDate
 
 @Service
 class AttendServiceImp(
@@ -20,7 +22,7 @@ class AttendServiceImp(
                 Result.Success(att)
             },
             onFailure = {
-                Result.Failure(it.message ?: "Unknown error occurred.")
+                Result.Failure("${it.message}")
             }
         )
     }
@@ -51,6 +53,21 @@ class AttendServiceImp(
         )
     }
 
+    override suspend fun getCustomAttByDate(date: Int): Result<Flow<Attend>> {
+        return runCatching {
+            if (date < 0)
+                Result.ClientError("Opp!")
+            repository.getCustomAttend(date)
+        }.fold(
+            onSuccess = {
+                Result.Success(it)
+            },
+            onFailure = {
+                Result.Failure("${it.message}")
+            }
+        )
+    }
+
     override fun getAllAttend(): Result<Flow<Attend>> {
         return kotlin.runCatching {
             repository.getAll()
@@ -75,6 +92,50 @@ class AttendServiceImp(
                 Result.Failure(it.message ?: "An error occurred while get attend.")
             }
         )
+    }
+
+    override suspend fun getAttByStudentID(studentID: Long): Result<Attend?> {
+        return runCatching{
+            repository.getAttendByStudentID(studentID)
+        }.fold(
+            onSuccess = {
+                Result.Success(it)
+            },
+            onFailure = {
+                Result.Failure("${it.message}")
+            }
+        )
+    }
+
+    override suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTime: Time): Result<Boolean> {
+        return runCatching {
+            repository.getAttendByStudentID(studentID) ?: Result.ClientError("Not found student")
+            repository.updateExitingTime(exitingTime, studentID, date)
+        }.fold(
+            onSuccess = {
+                Result.Success(it)
+            },
+            onFailure = {
+                Result.Failure("${it.message}")
+            }
+        )
+    }
+
+    override suspend fun countAttendCustomTime(date: Int): Result<Int?> {
+        return if (date < 0){
+            Result.ClientError("Opp!")
+        }else{
+            runCatching {
+                repository.count(date)
+            }.fold(
+                onSuccess = {
+                    Result.Success(it)
+                },
+                onFailure = {
+                    Result.Failure("${it.message}")
+                }
+            )
+        }
     }
 
 }

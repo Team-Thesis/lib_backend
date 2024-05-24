@@ -31,6 +31,7 @@ class StudentController(
             when(val result = service.saveStudent(students)){
                 is Result.Success -> ResponseEntity(result.data, HttpStatus.CREATED)
                 is Result.Failure -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+                is Result.ClientError -> ResponseEntity.badRequest().build()
             }
         }
         else
@@ -44,6 +45,7 @@ class StudentController(
         when(val result = service.getStudents()){
             is Result.Success -> ResponseEntity.ok().body(result.data)
             is Result.Failure -> ResponseEntity.noContent().build()
+            is Result.ClientError -> ResponseEntity.badRequest().build()
         }
     }
 
@@ -53,27 +55,29 @@ class StudentController(
     @GetMapping("/{studentID}")
     @ResponseBody
     suspend fun getStudentById(
-        @PathVariable studentID: Long
+        @PathVariable studentID: Long,
     ): ResponseEntity<Students> = coroutineScope{
         // get student
         when(val student = service.getStudent(studentID)){
             is Result.Success -> ResponseEntity.ok(student.data)
             is Result.Failure -> ResponseEntity.noContent().build()
+            is Result.ClientError -> ResponseEntity.badRequest().build()
         }
     }
 
     /*
      * Update student from database
      */
-    @PostMapping("/{studentID}")
+    @PutMapping("/{studentID}")
     @ResponseBody
     suspend fun updateStudent(
-        @RequestBody student: Students,
-        @PathVariable studentID: Long
+        @PathVariable studentID: Long,
+        @RequestBody students: Students
     ): ResponseEntity<Students> = coroutineScope {
-        when(val result = service.updateStudent(student.copy(studentID = studentID))){
+        when(val result = service.updateStudent(studentID, students)) {
             is Result.Success -> ResponseEntity.ok().body(result.data)
-            is Result.Failure -> ResponseEntity.badRequest().build()
+            is Result.Failure -> ResponseEntity.internalServerError().build()
+            is Result.ClientError -> ResponseEntity.notFound().build()
         }
     }
 
@@ -85,6 +89,7 @@ class StudentController(
         when(val result = service.deleteStudent(studentID)){
             is Result.Success -> ResponseEntity.ok().body(result.data)
             is Result.Failure -> ResponseEntity.badRequest().body(result.errorMsg)
+            is Result.ClientError -> ResponseEntity.badRequest().body(result.clientErrMsg)
         }
     }
 }

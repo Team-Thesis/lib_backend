@@ -2,28 +2,31 @@ package sru.edu.sru_lib_management.core.data.repository
 
 import io.r2dbc.spi.Row
 import kotlinx.coroutines.flow.Flow
-import org.springframework.data.r2dbc.repository.R2dbcRepository
 import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Component
-import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ALL_ATTEND_QUERY
-import org.springframework.r2dbc.core.DatabaseClient
 import sru.edu.sru_lib_management.core.data.query.AttendQuery
+import sru.edu.sru_lib_management.core.data.query.AttendQuery.DELETE_ATTEND_QUERY
+import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ALL_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ATTEND_QUERY
+import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ATTEND_QUERY_BY_STUDENT_ID
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.SAVE_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_ATTEND_QUERY
+import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_EXIT_TIME
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
 import java.sql.Date
-import java.sql.Timestamp
+import java.sql.Time
 import java.time.LocalDate
+import java.time.LocalTime
 
 @Component
 class AttendRepositoryImp(
     private val client: DatabaseClient
 ) : AttendRepository {
 
-    override fun getCustomAttend(date: Date): Flow<Attend> = client
-        .sql(GET_ATTEND_QUERY)
+    override fun getCustomAttend(date: Int): Flow<Attend> = client
+        .sql("Call GetAttendByCustomTime(:date)")
+            .bind("date", date)
             .map { row: Row, _ ->
                 row.mapToAttend()
             }
@@ -49,7 +52,7 @@ class AttendRepositoryImp(
             .bind("attendID", id)
             .map { row: Row, _ ->
                 row.mapToAttend()
-            }.awaitSingle()
+            }.awaitSingleOrNull()
     }
 
     override fun getAll(): Flow<Attend> {
@@ -59,11 +62,39 @@ class AttendRepositoryImp(
             }.flow()
     }
 
-    override suspend fun delete(id: Long) {
-        client.sql(AttendQuery.DELETE_ATTEND_QUERY)
+    override suspend fun delete(id: Long): Boolean {
+        val rowEffect = client.sql(DELETE_ATTEND_QUERY)
             .bind("attendID", id)
             .fetch()
             .awaitRowsUpdated()
+        return rowEffect > 0
+    }
+
+    override suspend fun updateExitingTime(exitingTime: Time, studentID: Long, date: LocalDate): Boolean {
+        val rowEffect = client.sql(UPDATE_EXIT_TIME)
+            .bind("exitingTimes", exitingTime)
+            .bind("studentID", studentID)
+            .bind("date", date)
+            .fetch()
+            .awaitRowsUpdated()
+        return rowEffect > 0
+    }
+
+    override suspend fun count(date: Int): Int? {
+        return client.sql("CALL CountAttendByCustomTime(:date)")
+            .bind("date", date)
+            .map {row ->
+                row.get("attendance_count", Int::class.java)
+            }
+            .awaitSingle()
+    }
+
+    override suspend fun getAttendByStudentID(studentID: Long): Attend? {
+        return client.sql(GET_ATTEND_QUERY_BY_STUDENT_ID)
+            .bind("student_id", studentID)
+            .map { row: Row, _ ->
+                row.mapToAttend()
+            }.awaitSingleOrNull()
     }
 
 
@@ -71,17 +102,17 @@ class AttendRepositoryImp(
         "attendID" to attend.attendID!!,
         "studentID" to attend.studentID,
         "entryTimes" to attend.entryTimes,
-        "exitingTimes" to attend.exitingTimes,
-        "date" to attend.date,
-        "purpose" to attend.purpose
+        "exitingTimes" to attend.exitingTimes!!,
+        "purpose" to attend.purpose,
+        "date" to attend.date
     )
 
     private fun Row.mapToAttend(): Attend = Attend(
         attendID = this.get("attend_id", Long::class.java)!!,
         studentID = this.get("student_id", Long::class.java)!!,
-        entryTimes = this.get("entry_times", Timestamp::class.java)!!,
-        exitingTimes = this.get("exiting_times", Timestamp::class.java)!!,
+        entryTimes = this.get("entry_times", LocalTime::class.java)!!,
+        exitingTimes = this.get("exiting_times", LocalTime::class.java)!!,
+        purpose = this.get("purpose", String::class.java)!!,
         date = this.get("date", LocalDate::class.java)!!,
-        purpose = this.get("purpose", String::class.java)!!
     )
 }

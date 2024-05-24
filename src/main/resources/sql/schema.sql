@@ -92,17 +92,17 @@ Create table if not exists borrow_books(
 );
 #8
 #========================================================
-# crate table attendance
-#Drop table if exists attendance;
+# crate table attend and exit
 Create table if not exists attend(
     attend_id bigint primary key auto_increment,
     student_id bigint not null ,
-    entry_times timestamp not null ,
-    exiting_times timestamp not null ,
+    entry_times timestamp null ,
+    exiting_times timestamp null ,
     date date not null ,
     purpose varchar(50) not null ,
     foreign key (student_id) references students(student_id)
 );
+
 #9
 #========================================================
 # crate table guest
@@ -126,7 +126,7 @@ create table if not exists book_sponsors(
     foreign key (book_id) references books(book_id) on delete cascade on update cascade
 );
 
-#10
+#11
 #========================================================
 #crate table user
 create table if not exists users(
