@@ -103,6 +103,7 @@ Create table if not exists attend(
     foreign key (student_id) references students(student_id)
 );
 
+
 #9
 #========================================================
 # crate table guest

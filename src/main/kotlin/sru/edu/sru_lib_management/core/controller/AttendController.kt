@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.service.attendService.AttendServiceImp
 import sru.edu.sru_lib_management.core.util.Result
 import java.sql.Time
 import java.time.LocalDate
+import java.time.LocalTime
 
 @Controller
 @RequestMapping("api/v1/att")
@@ -24,15 +24,20 @@ class AttendController(
     * Save Attend when Student attend library
     * */
     @PostMapping
-    @Transactional
     suspend fun saveAtt(
         @RequestBody attend: Attend
     ): ResponseEntity<Any> = coroutineScope {
         if (attend.purpose.isBlank())
             ResponseEntity.status(HttpStatus.CONFLICT)
-        val result = service.saveAttend(attend)
-        println(result)
-        when(result){
+        val attends = Attend(
+            attendID = null,
+            studentID = attend.studentID,
+            entryTimes = attend.entryTimes,
+            exitingTimes = null,
+            purpose = attend.purpose,
+            date = attend.date
+        )
+        when(val result = service.saveAttend(attends)){
             is Result.Success -> ResponseEntity(result.data, HttpStatus.CREATED)
             is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
             is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.BAD_REQUEST)
@@ -76,11 +81,11 @@ class AttendController(
     suspend fun updateExitingTime(
         @RequestParam studentID: Long,
         @RequestParam date: LocalDate,
-        @RequestParam exitTime: Time
-    ): ResponseEntity<Boolean> = coroutineScope{
-        when(val result = service.updateExitingTime(studentID, date, exitTime)){
-            is Result.ClientError -> ResponseEntity.badRequest().build()
-            is Result.Failure -> ResponseEntity.internalServerError().build()
+        @RequestParam exitingTimes: LocalTime
+    ): ResponseEntity<Any> = coroutineScope{
+        when(val result = service.updateExitingTime(studentID, date, exitingTimes)){
+            is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.BAD_REQUEST)
+            is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
             is Result.Success -> ResponseEntity(result.data, HttpStatus.ACCEPTED)
         }
     }

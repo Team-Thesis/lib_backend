@@ -8,6 +8,7 @@ import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
 import sru.edu.sru_lib_management.core.util.Result
 import java.sql.Time
 import java.time.LocalDate
+import java.time.LocalTime
 
 @Service
 class AttendServiceImp(
@@ -21,8 +22,13 @@ class AttendServiceImp(
             onSuccess = {att ->
                 Result.Success(att)
             },
-            onFailure = {
-                Result.Failure("${it.message}")
+            onFailure = {e ->
+                if (e is Exception) {
+                    e.printStackTrace()
+                    Result.Failure("${e.message}")
+                }
+                else
+                    Result.ClientError("User input error")
             }
         )
     }
@@ -94,9 +100,9 @@ class AttendServiceImp(
         )
     }
 
-    override suspend fun getAttByStudentID(studentID: Long): Result<Attend?> {
+    override suspend fun getAttByStudentID(studentID: Long, date: LocalDate): Result<Attend?> {
         return runCatching{
-            repository.getAttendByStudentID(studentID)
+            repository.getAttendByStudentID(studentID, date)
         }.fold(
             onSuccess = {
                 Result.Success(it)
@@ -107,10 +113,14 @@ class AttendServiceImp(
         )
     }
 
-    override suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTime: Time): Result<Boolean> {
+    override suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean> {
         return runCatching {
-            repository.getAttendByStudentID(studentID) ?: Result.ClientError("Not found student")
-            repository.updateExitingTime(exitingTime, studentID, date)
+            val findExistAttend = repository.getAttendByStudentID(studentID, date)
+            println(findExistAttend)
+            if (findExistAttend == null){
+                Result.ClientError("Can not find attend with this student id: $studentID")
+            }
+            repository.updateExitingTime(exitingTimes, studentID, date)
         }.fold(
             onSuccess = {
                 Result.Success(it)

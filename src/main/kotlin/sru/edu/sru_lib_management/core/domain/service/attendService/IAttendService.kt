@@ -7,6 +7,7 @@ import sru.edu.sru_lib_management.core.util.Result
 import java.sql.Date
 import java.sql.Time
 import java.time.LocalDate
+import java.time.LocalTime
 
 interface IAttendService {
     fun getAllAttend(): Result<Flow<Attend>>
@@ -15,7 +16,7 @@ interface IAttendService {
     suspend fun deleteAttend(attendID: Long): Result<Boolean>
     suspend fun getCustomAttByDate(date: Int): Result<Flow<Attend>>
     suspend fun getAttend(attendID: Long): Result<Attend?>
-    suspend fun getAttByStudentID(studentID: Long): Result<Attend?>
-    suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTime: Time): Result<Boolean>
+    suspend fun getAttByStudentID(studentID: Long, date: LocalDate): Result<Attend?>
+    suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean>
     suspend fun countAttendCustomTime(date: Int): Result<Int?>
 }

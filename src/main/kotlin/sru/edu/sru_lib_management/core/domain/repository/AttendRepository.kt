@@ -7,11 +7,12 @@ import sru.edu.sru_lib_management.core.domain.repository.crud.ICrudRepository
 import java.sql.Date
 import java.sql.Time
 import java.time.LocalDate
+import java.time.LocalTime
 
 @Repository
 interface AttendRepository : ICrudRepository<Attend, Long> {
     fun getCustomAttend(date: Int): Flow<Attend>
-    suspend fun updateExitingTime(exitingTime: Time, studentID: Long, date: LocalDate): Boolean
+    suspend fun updateExitingTime(exitingTimes: LocalTime, studentID: Long, date: LocalDate): Boolean
     suspend fun count(date: Int): Int?
-    suspend fun getAttendByStudentID(studentID: Long): Attend?
+    suspend fun getAttendByStudentID(studentID: Long, date: LocalDate): Attend?
 }

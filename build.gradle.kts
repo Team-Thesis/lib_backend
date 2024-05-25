@@ -29,6 +29,7 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("org.projectlombok:lombok")
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("io.asyncer:r2dbc-mysql")
 
@@ -40,7 +41,6 @@ dependencies {
 
     implementation("io.r2dbc:r2dbc-spi:1.0.0.RELEASE")
     implementation("io.asyncer:r2dbc-mysql:1.1.3")
-    implementation("org.projectlombok:lombok")
 
     // jwt
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
