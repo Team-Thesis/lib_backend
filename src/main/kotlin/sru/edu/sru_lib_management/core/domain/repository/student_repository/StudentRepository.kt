@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.core.domain.repository
+package sru.edu.sru_lib_management.core.domain.repository.student_repository
 
 import org.springframework.stereotype.Repository
 import sru.edu.sru_lib_management.core.domain.model.Students

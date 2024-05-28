@@ -4,8 +4,8 @@ import java.time.LocalTime
 import java.time.LocalDate
 
 data class Attend (
-    val attendID: Long?,
-    val studentID: Long,
+    val attendId: Long?,
+    val studentId: Long,
     val entryTimes: LocalTime,
     val exitingTimes: LocalTime?,
     val purpose: String,

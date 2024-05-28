@@ -32,7 +32,7 @@ class AttendRepositoryImp(
     override suspend fun save(entity: Attend): Attend {
         println("Entity in repo $entity")
         val attend = mapOf(
-            "studentID" to entity.studentID,
+            "studentID" to entity.studentId,
             "entryTimes" to entity.entryTimes,
             "purpose" to entity.purpose,
             "date" to entity.date
@@ -104,8 +104,8 @@ class AttendRepositoryImp(
 
 
     private fun paramMap(attend: Attend): Map<String, Any?> = mapOf(
-        "attendID" to attend.attendID,
-        "studentID" to attend.studentID,
+        "attendID" to attend.attendId,
+        "studentID" to attend.studentId,
         "entryTimes" to attend.entryTimes,
         "exitingTimes" to attend.exitingTimes,
         "purpose" to attend.purpose,
@@ -113,8 +113,8 @@ class AttendRepositoryImp(
     )
 
     private fun Row.mapToAttend(): Attend = Attend(
-        attendID = this.get("attend_id", Long::class.java)!!,
-        studentID = this.get("student_id", Long::class.java)!!,
+        attendId = this.get("attend_id", Long::class.java)!!,
+        studentId = this.get("student_id", Long::class.java)!!,
         entryTimes = this.get("entry_times", LocalTime::class.java)!!,
         exitingTimes = this.get("exiting_times", LocalTime::class.java),
         purpose = this.get("purpose", String::class.java)!!,

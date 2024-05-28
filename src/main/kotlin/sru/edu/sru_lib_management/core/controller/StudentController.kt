@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import sru.edu.sru_lib_management.core.domain.model.Students
-import sru.edu.sru_lib_management.core.domain.service.studentService.StudentService
-import sru.edu.sru_lib_management.core.util.Result
+import sru.edu.sru_lib_management.core.domain.service.implementation.StudentService
+import sru.edu.sru_lib_management.core.common.Result
 
 
 @RestController
@@ -26,7 +26,7 @@ class StudentController(
     suspend fun saveStudent(
         @RequestBody students: Students
     ): ResponseEntity<Students?> = coroutineScope {
-        val areFieldBlank = students.studentID == null || students.studentName.isBlank() || students.gender.isBlank()
+        val areFieldBlank = students.studentId == null || students.studentName.isBlank() || students.gender.isBlank()
         if (!areFieldBlank){
             when(val result = service.saveStudent(students)){
                 is Result.Success -> ResponseEntity(result.data, HttpStatus.CREATED)

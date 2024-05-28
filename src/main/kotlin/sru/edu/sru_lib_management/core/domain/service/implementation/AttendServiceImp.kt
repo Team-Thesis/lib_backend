@@ -1,19 +1,19 @@
-package sru.edu.sru_lib_management.core.domain.service.attendService
+package sru.edu.sru_lib_management.core.domain.service.implementation
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
-import sru.edu.sru_lib_management.core.util.Result
-import java.sql.Time
+import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.service.IAttendService
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Service
 class AttendServiceImp(
     @Qualifier("attendRepositoryImp") private val repository: AttendRepository
-) : IAttendService{
+) : IAttendService {
 
     override suspend fun saveAttend(attend: Attend): Result<Attend?> {
         return runCatching {

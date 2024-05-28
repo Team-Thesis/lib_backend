@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.core.domain.service.borrowBookService
+package sru.edu.sru_lib_management.core.domain.service
 
 
 interface IBorrowService<T> {

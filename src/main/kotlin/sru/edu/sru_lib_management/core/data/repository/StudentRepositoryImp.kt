@@ -12,7 +12,7 @@ import sru.edu.sru_lib_management.core.data.query.StudentQuery.GET_STUDENT_QUERY
 import sru.edu.sru_lib_management.core.data.query.StudentQuery.SAVE_STUDENT_QUERY
 import sru.edu.sru_lib_management.core.data.query.StudentQuery.UPDATE_STUDENT_QUERY
 import sru.edu.sru_lib_management.core.domain.model.Students
-import sru.edu.sru_lib_management.core.domain.repository.StudentRepository
+import sru.edu.sru_lib_management.core.domain.repository.student_repository.StudentRepository
 import java.time.LocalDate
 
 @Component
@@ -67,22 +67,22 @@ class StudentRepositoryImp (
 
 
     private fun paramMap(students: Students): Map<String, Any> = mapOf(
-        "studentID" to students.studentID!!,
+        "studentID" to students.studentId!!,
         "studentName" to students.studentName,
         "gender" to  students.gender,
         "dateOfBirth" to students.dateOfBirth,
-        "degreeLevelID" to students.degreeLevelID,
-        "majorID" to students.majorID,
+        "degreeLevelID" to students.degreeLevelId,
+        "majorID" to students.majorId,
         "generation" to students.generation
     )
 
     private fun Row.mapToStudent(): Students = Students(
-        studentID = this.get("student_id", Long::class.java),
+        studentId = this.get("student_id", Long::class.java),
         studentName = this.get("student_name", String::class.java)!!,
         gender = this.get("gender", String::class.java)!!,
         dateOfBirth = this.get("date_of_birth", LocalDate::class.java)!!,
-        degreeLevelID = this.get("degree_level_id", Int::class.java)!!,
-        majorID = this.get("major_id", Int::class.java)!!,
+        degreeLevelId = this.get("degree_level_id", String::class.java)!!,
+        majorId = this.get("major_id", String::class.java)!!,
         generation = this.get("generation", Int::class.java)!!
     )
 }

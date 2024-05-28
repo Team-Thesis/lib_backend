@@ -1,11 +1,8 @@
-package sru.edu.sru_lib_management.core.domain.service.attendService
+package sru.edu.sru_lib_management.core.domain.service
 
 import kotlinx.coroutines.flow.Flow
 import sru.edu.sru_lib_management.core.domain.model.Attend
-import sru.edu.sru_lib_management.core.domain.model.Students
-import sru.edu.sru_lib_management.core.util.Result
-import java.sql.Date
-import java.sql.Time
+import sru.edu.sru_lib_management.core.common.Result
 import java.time.LocalDate
 import java.time.LocalTime
 

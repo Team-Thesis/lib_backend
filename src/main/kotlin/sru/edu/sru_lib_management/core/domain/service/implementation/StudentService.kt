@@ -1,11 +1,12 @@
-package sru.edu.sru_lib_management.core.domain.service.studentService
+package sru.edu.sru_lib_management.core.domain.service.implementation
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Students
-import sru.edu.sru_lib_management.core.domain.repository.StudentRepository
-import sru.edu.sru_lib_management.core.util.Result
+import sru.edu.sru_lib_management.core.domain.repository.student_repository.StudentRepository
+import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.service.IStudentService
 
 @Service
 class StudentService(
@@ -29,13 +30,12 @@ class StudentService(
         return runCatching {
             val existingStudent = repository.getById(studentID)
                 ?: return@runCatching Result.ClientError("Not found student with ID: $studentID")
-            println(existingStudent)
             val updateStudents = existingStudent.copy(
                 studentName = students.studentName,
                 gender = students.gender,
                 dateOfBirth = students.dateOfBirth,
-                degreeLevelID = students.degreeLevelID,
-                majorID = students.majorID,
+                degreeLevelId = students.degreeLevelId,
+                majorId = students.majorId,
                 generation = students.generation
             )
             repository.update(updateStudents)

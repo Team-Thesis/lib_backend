@@ -7,9 +7,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import sru.edu.sru_lib_management.core.domain.model.Attend
-import sru.edu.sru_lib_management.core.domain.service.attendService.AttendServiceImp
-import sru.edu.sru_lib_management.core.util.Result
-import java.sql.Time
+import sru.edu.sru_lib_management.core.domain.service.implementation.AttendServiceImp
+import sru.edu.sru_lib_management.core.common.Result
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -30,8 +29,8 @@ class AttendController(
         if (attend.purpose.isBlank())
             ResponseEntity.status(HttpStatus.CONFLICT)
         val attends = Attend(
-            attendID = null,
-            studentID = attend.studentID,
+            attendId = null,
+            studentId = attend.studentId,
             entryTimes = attend.entryTimes,
             exitingTimes = null,
             purpose = attend.purpose,
@@ -53,7 +52,7 @@ class AttendController(
         @RequestBody attend: Attend,
         @PathVariable attId: Long
     ): ResponseEntity<Attend?> = coroutineScope {
-        when(val result = service.updateAttend(attend.copy(attendID = attId))){
+        when(val result = service.updateAttend(attend.copy(attendId = attId))){
             is Result.Success -> ResponseEntity(result.data, HttpStatus.ACCEPTED)
             is Result.Failure -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
             is Result.ClientError -> ResponseEntity.badRequest().build()

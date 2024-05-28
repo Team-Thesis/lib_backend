@@ -1,3 +1,3 @@
-package sru.edu.sru_lib_management.core.util
+package sru.edu.sru_lib_management.core.common
 
 class APIException(message: String?) : RuntimeException(message)

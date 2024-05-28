@@ -4,11 +4,11 @@ import java.time.LocalDate
 
 
 data class Students (
-    val studentID: Long?,
+    val studentId: Long?,
     val studentName: String,
     val gender: String,
     val dateOfBirth: LocalDate,
-    val degreeLevelID: Int,
-    val majorID: Int,
+    val degreeLevelId: String,
+    val majorId: String,
     val generation: Int
 )

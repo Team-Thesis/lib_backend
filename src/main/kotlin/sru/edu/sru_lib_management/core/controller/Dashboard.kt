@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import sru.edu.sru_lib_management.core.domain.model.Books
 import sru.edu.sru_lib_management.core.domain.model.Students
-import sru.edu.sru_lib_management.core.domain.service.bookService.BookService
-import sru.edu.sru_lib_management.core.domain.service.studentService.StudentService
-import sru.edu.sru_lib_management.core.util.Result
+import sru.edu.sru_lib_management.core.domain.service.implementation.BookService
+import sru.edu.sru_lib_management.core.domain.service.implementation.StudentService
+import sru.edu.sru_lib_management.core.common.Result
 
 @RestController
 @RequestMapping("api/v1/dashboard")
@@ -33,7 +33,8 @@ class Dashboard(
     @GetMapping("/books")
     @FlowPreview
     suspend fun getAllBook(): ResponseEntity<Flow<Books>> {
-        val books = bookService.getAllBooks()
-        return ResponseEntity.ok(books)
+        TODO()
+//        val books = bookService.getAllBooks()
+//        return ResponseEntity.ok(books)
     }
 }
