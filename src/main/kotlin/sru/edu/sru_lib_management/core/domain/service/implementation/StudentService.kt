@@ -21,6 +21,7 @@ class StudentService(
                 Result.Success(student)
             },
             onFailure = { e ->
+                println(e.printStackTrace())
                 Result.Failure(e.message ?: "Unknown error occurred.")
             }
         )

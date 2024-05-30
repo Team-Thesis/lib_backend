@@ -67,12 +67,12 @@ class StudentRepositoryImp (
 
 
     private fun paramMap(students: Students): Map<String, Any> = mapOf(
-        "studentID" to students.studentId!!,
+        "studentId" to students.studentId!!,
         "studentName" to students.studentName,
         "gender" to  students.gender,
         "dateOfBirth" to students.dateOfBirth,
-        "degreeLevelID" to students.degreeLevelId,
-        "majorID" to students.majorId,
+        "degreeLevelId" to students.degreeLevelId,
+        "majorId" to students.majorId,
         "generation" to students.generation
     )
 

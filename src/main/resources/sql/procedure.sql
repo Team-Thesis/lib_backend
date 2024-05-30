@@ -50,3 +50,11 @@ CREATE PROCEDURE GetBorrowBookByCustomTime(
     SELECT * from borrow_books WHERE borrow_date >= startDate;
 END; #end procedure
 
+CREATE PROCEDURE CountAttendForPeriod(IN period INT)
+begin
+    DECLARE startDate DATE;
+    SET startDate = CURDATE() - interval period day ;
+    select date, COUNT(*) as count
+    from attend where date >= startDate GROUP BY date ORDER BY date;
+end;
+

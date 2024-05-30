@@ -30,9 +30,8 @@ class AttendRepositoryImp(
             .flow()
 
     override suspend fun save(entity: Attend): Attend {
-        println("Entity in repo $entity")
         val attend = mapOf(
-            "studentID" to entity.studentId,
+            "studentId" to entity.studentId,
             "entryTimes" to entity.entryTimes,
             "purpose" to entity.purpose,
             "date" to entity.date

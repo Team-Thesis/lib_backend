@@ -29,12 +29,5 @@ class Dashboard(
         }
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @GetMapping("/books")
-    @FlowPreview
-    suspend fun getAllBook(): ResponseEntity<Flow<Books>> {
-        TODO()
-//        val books = bookService.getAllBooks()
-//        return ResponseEntity.ok(books)
-    }
+
 }

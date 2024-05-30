@@ -1,4 +1,4 @@
-package sru.edu.sru_lib_management.config
+package sru.edu.sru_lib_management.infrastructure.config
 
 
 import kotlinx.coroutines.reactor.mono

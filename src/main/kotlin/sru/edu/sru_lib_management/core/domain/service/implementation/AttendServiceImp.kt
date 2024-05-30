@@ -15,6 +15,9 @@ class AttendServiceImp(
     @Qualifier("attendRepositoryImp") private val repository: AttendRepository
 ) : IAttendService {
 
+    /*
+    * Save new Attend
+    * */
     override suspend fun saveAttend(attend: Attend): Result<Attend?> {
         return runCatching {
             repository.save(attend)
@@ -33,6 +36,9 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Update attend
+    * */
     override suspend fun updateAttend(attend: Attend): Result<Attend?> {
         return runCatching {
             repository.update(attend)
@@ -46,6 +52,9 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Delete attend
+    * */
     override suspend fun deleteAttend(attendID: Long): Result<Boolean> {
         return runCatching{
             repository.delete(attendID)
@@ -59,6 +68,9 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Select custom attend by date
+    * */
     override suspend fun getCustomAttByDate(date: Int): Result<Flow<Attend>> {
         return runCatching {
             if (date < 0)
@@ -74,8 +86,11 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Get all attend
+    * */
     override fun getAllAttend(): Result<Flow<Attend>> {
-        return kotlin.runCatching {
+        return runCatching {
             repository.getAll()
         }.fold(
             onSuccess = {att ->
@@ -87,6 +102,9 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Select attend by id
+    * */
     override suspend fun getAttend(attendID: Long): Result<Attend?> {
         return runCatching{
             repository.getById(attendID)
@@ -100,6 +118,9 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Get attend by student id
+    * */
     override suspend fun getAttByStudentID(studentID: Long, date: LocalDate): Result<Attend?> {
         return runCatching{
             repository.getAttendByStudentID(studentID, date)
@@ -113,6 +134,9 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Update exiting time when student go out
+    * */
     override suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean> {
         return runCatching {
             val findExistAttend = repository.getAttendByStudentID(studentID, date)
@@ -131,6 +155,9 @@ class AttendServiceImp(
         )
     }
 
+    /*
+    * Count attend custom by time
+    * */
     override suspend fun countAttendCustomTime(date: Int): Result<Int?> {
         return if (date < 0){
             Result.ClientError("Opp!")
