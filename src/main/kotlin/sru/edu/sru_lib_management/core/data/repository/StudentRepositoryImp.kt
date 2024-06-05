@@ -41,7 +41,7 @@ class StudentRepositoryImp (
 
     override suspend fun getById(id: Long): Students? {
         return client.sql(GET_STUDENT_QUERY)
-            .bind("studentID", id)
+            .bind("studentId", id)
             .map { row: Row, _ ->
                 row.mapToStudent()
             }.awaitOneOrNull()
@@ -59,7 +59,7 @@ class StudentRepositoryImp (
     @Transactional
     override suspend fun delete(id: Long): Boolean {
         val rowEffect = client.sql(DELETE_STUDENT_QUERY)
-            .bind("studentID", id)
+            .bind("studentId", id)
             .fetch()
             .awaitRowsUpdated()
         return rowEffect > 0

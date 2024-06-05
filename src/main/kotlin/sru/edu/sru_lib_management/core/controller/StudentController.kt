@@ -3,19 +3,20 @@ package sru.edu.sru_lib_management.core.controller
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
-import sru.edu.sru_lib_management.core.domain.model.Students
-import sru.edu.sru_lib_management.core.domain.service.implementation.StudentService
 import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.model.Students
+import sru.edu.sru_lib_management.core.domain.service.IStudentService
 
 
 @RestController
 @RequestMapping("api/v1/student")
 class StudentController(
-    private val service: StudentService
+    @Qualifier("studentService") private val service: IStudentService
 ) {
 
     /*

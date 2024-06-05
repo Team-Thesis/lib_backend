@@ -2,20 +2,21 @@ package sru.edu.sru_lib_management.core.controller
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
-import sru.edu.sru_lib_management.core.domain.model.Attend
-import sru.edu.sru_lib_management.core.domain.service.implementation.AttendServiceImp
 import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.model.Attend
+import sru.edu.sru_lib_management.core.domain.service.IAttendService
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Controller
 @RequestMapping("api/v1/att")
 class AttendController(
-    private val service: AttendServiceImp
+    @Qualifier("attendService") private val service: IAttendService
 ) {
 
     /*

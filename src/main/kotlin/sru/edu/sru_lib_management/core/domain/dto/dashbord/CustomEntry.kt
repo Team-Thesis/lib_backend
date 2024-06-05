@@ -1,6 +1,8 @@
 package sru.edu.sru_lib_management.core.domain.dto.dashbord
 
-data class EntryToday(
-    val count: Int,
+import java.time.LocalDate
+
+data class CustomEntry(
+    val count: Map<LocalDate, Int>,
     val percentageChange: Double
 )

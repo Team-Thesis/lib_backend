@@ -2,6 +2,8 @@ package sru.edu.sru_lib_management.core.data.repository
 
 import io.r2dbc.spi.Row
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.DELETE_ATTEND_QUERY
@@ -99,6 +101,20 @@ class AttendRepositoryImp(
             .map { row: Row, _ ->
                 row.mapToAttend()
             }.awaitSingleOrNull()
+    }
+
+    override suspend fun countVisitorsForPeriod(period: Int): Map<LocalDate, Int> {
+        return client.sql("CALL CountAttendForPeriod(:period)")
+            .bind("period", period)
+            .map { row, _ ->
+                val date = row.get("date", LocalDate::class.java)!!
+                val count = row.get("count", Int::class.java)!!
+                date to  count
+            }
+            .all()
+            .collectList()
+            .awaitSingle()
+            .toMap()
     }
 
 

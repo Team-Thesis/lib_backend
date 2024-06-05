@@ -2,6 +2,7 @@ package sru.edu.sru_lib_management.core.controller
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -12,7 +13,7 @@ import sru.edu.sru_lib_management.core.domain.service.IBookService
 @RestController
 @RequestMapping("/api/v1/book")
 class BookController(
-    private val service: IBookService
+    @Qualifier("bookService") private val service: IBookService
 ) {
 
     /*

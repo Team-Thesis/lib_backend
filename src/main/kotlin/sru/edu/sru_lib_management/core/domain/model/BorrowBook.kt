@@ -1,12 +1,13 @@
 package sru.edu.sru_lib_management.core.domain.model
 
-import java.sql.Date
+import java.time.LocalDate
+
 
 class BorrowBook (
     val borrowId: Long?,
     val bookId: String,
     val studentId: Long,
-    val borrowDate: Date,
-    val giveBackDate: Date,
+    val borrowDate: LocalDate,
+    val giveBackDate: LocalDate,
     val isBringBack: Boolean
 )

@@ -2,13 +2,14 @@ package sru.edu.sru_lib_management.core.domain.service.implementation
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Students
 import sru.edu.sru_lib_management.core.domain.repository.student_repository.StudentRepository
 import sru.edu.sru_lib_management.core.common.Result
 import sru.edu.sru_lib_management.core.domain.service.IStudentService
 
-@Service
+@Component
 class StudentService(
    @Qualifier("studentRepositoryImp") private val repository: StudentRepository
 ) : IStudentService {

@@ -2,16 +2,17 @@ package sru.edu.sru_lib_management.core.domain.service.implementation
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
 import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomEntry
 import sru.edu.sru_lib_management.core.domain.service.IAttendService
 import java.time.LocalDate
 import java.time.LocalTime
 
-@Service
-class AttendServiceImp(
+@Component
+class AttendService(
     @Qualifier("attendRepositoryImp") private val repository: AttendRepository
 ) : IAttendService {
 
@@ -173,6 +174,35 @@ class AttendServiceImp(
                 }
             )
         }
+    }
+
+    override suspend fun countVisitorsForPeriod(endDate: LocalDate, period: Int): Result<CustomEntry> {
+        return runCatching {
+            val attendCount = repository.countVisitorsForPeriod(period)
+
+            val todayCount = attendCount[endDate] ?: 0
+            val previousPeriodEndDay = endDate.minusDays(period.toLong())
+            val previousAttendCount = repository.countVisitorsForPeriod(period)
+            val previousPeriodCount = previousAttendCount[previousPeriodEndDay] ?: 0
+
+            val percentageChange = if (previousPeriodCount == 0){
+                if (todayCount == 0) 0.0 else 100.0
+            }else{
+                ((todayCount - previousPeriodCount)).toDouble() / previousPeriodCount * 100
+            }
+            CustomEntry(
+                attendCount,
+                percentageChange
+            )
+        }.fold(
+            onSuccess = {
+                Result.Success(it)
+            },
+            onFailure = {
+                println(it.printStackTrace())
+                Result.Failure("${it.message}")
+            }
+        )
     }
 
 }
