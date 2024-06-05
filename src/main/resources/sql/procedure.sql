@@ -58,10 +58,10 @@ begin
     from attend where date >= startDate GROUP BY date ORDER BY date;
 end;
 
-Create Procedure CountBorrowForPeriod(in period INT)
+Create Procedure CountBorrowPerWeek()
 BEGIN
     DECLARE startDate DATE;
-    set startDate = CURDATE() - interval period day;
+    set startDate = CURDATE() - interval 7 day;
     SELECT borrow_date, COUNT(*) as count
     From borrow_books where borrow_date >= startDate GROUP BY borrow_date ORDER BY borrow_date;
 end;

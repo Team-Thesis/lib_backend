@@ -10,5 +10,5 @@ import java.time.LocalDate
 @Repository
 interface BorrowBookRepository : ICrudRepository<BorrowBook, Long> {
     fun customBorrow(date: Date): Flow<BorrowBook>
-    suspend fun countBorrowForPeriod(period: Int): Map<LocalDate, Int>
+    suspend fun countBorrowPerWeek(): Map<LocalDate, Int>
 }

@@ -23,9 +23,8 @@ class BorrowBookRepositoryImp(
         TODO("Not yet implemented")
     }
 
-    override suspend fun countBorrowForPeriod(period: Int): Map<LocalDate, Int> {
-       return client.sql("CALL CountBorrowForPeriod(:period)")
-           .bind("period", period)
+    override suspend fun countBorrowPerWeek(): Map<LocalDate, Int> {
+       return client.sql("CALL CountBorrowPerWeek()")
            .map { row ->
                val date = row.get("borrow_date", LocalDate::class.java)!!
                val count = row.get("count", Int::class.java)!!

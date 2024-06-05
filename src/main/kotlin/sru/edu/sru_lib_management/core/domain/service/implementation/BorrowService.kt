@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.common.Result
-import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomBorrow
 import sru.edu.sru_lib_management.core.domain.model.BorrowBook
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BookRepository
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BorrowBookRepository
@@ -84,25 +83,8 @@ class BorrowService(
         TODO("Not yet implemented")
     }
 
-    override suspend fun countBorrowForPeriod(
-        period: Int, endDate: LocalDate
-    ): Result<CustomBorrow> = runCatching {
-        val borrowCount = borrowBookRepository.countBorrowForPeriod(period)
-
-        val todayCount = borrowCount[endDate] ?: 0
-        val previousPeriodEndDay = endDate.minusDays(period.toLong())
-        val previousBorrowCount = borrowBookRepository.countBorrowForPeriod(period)
-        val previousPeriodCount = previousBorrowCount[previousPeriodEndDay] ?: 0
-
-        val percentageChange = if (previousPeriodCount == 0){
-            if (todayCount == 0) 0.0 else 100.0
-        }else {
-            ((todayCount - previousPeriodCount)).toDouble() / previousPeriodCount * 100
-        }
-        CustomBorrow(
-            count = borrowCount,
-            percentageChange = percentageChange
-        )
+    override suspend fun countBorrowPerWeek(): Result<Map<LocalDate, Int>> = runCatching {
+        borrowBookRepository.countBorrowPerWeek()
     }.fold(
         onSuccess = {
             Result.Success(it)

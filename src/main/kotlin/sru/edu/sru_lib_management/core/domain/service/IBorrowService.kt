@@ -3,7 +3,6 @@ package sru.edu.sru_lib_management.core.domain.service
 import kotlinx.coroutines.flow.Flow
 import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.common.Result
-import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomBorrow
 import sru.edu.sru_lib_management.core.domain.model.BorrowBook
 import java.time.LocalDate
 
@@ -17,5 +16,5 @@ interface IBorrowService {
     suspend fun deleteBorrow(borrowID: Long): Result<Boolean>
     //
 
-    suspend fun countBorrowForPeriod(period: Int, endDate: LocalDate): Result<CustomBorrow>
+    suspend fun countBorrowPerWeek(): Result<Map<LocalDate, Int>>
 }
