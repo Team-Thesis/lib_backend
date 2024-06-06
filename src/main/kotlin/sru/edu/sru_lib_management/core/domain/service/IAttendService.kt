@@ -20,5 +20,5 @@ interface IAttendService {
     suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean>
     suspend fun countAttendCustomTime(date: Int): Result<Int?>
 
-    suspend fun countVisitorsForPeriod(endDate: LocalDate,period: Int): Result<CustomEntry>
+    suspend fun countVisitorsForPeriod(): Result<Map<LocalDate, Int>>
 }

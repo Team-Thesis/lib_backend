@@ -176,24 +176,9 @@ class AttendService(
         }
     }
 
-    override suspend fun countVisitorsForPeriod(endDate: LocalDate, period: Int): Result<CustomEntry> {
+    override suspend fun countVisitorsForPeriod(): Result<Map<LocalDate, Int>> {
         return runCatching {
-            val attendCount = repository.countVisitorsForPeriod(period)
-
-            val todayCount = attendCount[endDate] ?: 0
-            val previousPeriodEndDay = endDate.minusDays(period.toLong())
-            val previousAttendCount = repository.countVisitorsForPeriod(period)
-            val previousPeriodCount = previousAttendCount[previousPeriodEndDay] ?: 0
-
-            val percentageChange = if (previousPeriodCount == 0){
-                if (todayCount == 0) 0.0 else 100.0
-            }else{
-                ((todayCount - previousPeriodCount)).toDouble() / previousPeriodCount * 100
-            }
-            CustomEntry(
-                attendCount,
-                percentageChange
-            )
+            repository.countVisitorsForPeriod()
         }.fold(
             onSuccess = {
                 Result.Success(it)

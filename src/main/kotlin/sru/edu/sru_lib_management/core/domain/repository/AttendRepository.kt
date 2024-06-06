@@ -13,5 +13,5 @@ interface AttendRepository : ICrudRepository<Attend, Long> {
     suspend fun updateExitingTime(exitingTimes: LocalTime, studentID: Long, date: LocalDate): Boolean
     suspend fun count(date: Int): Int?
     suspend fun getAttendByStudentID(studentID: Long, date: LocalDate): Attend?
-    suspend fun countVisitorsForPeriod(period: Int): Map<LocalDate, Int>
+    suspend fun countVisitorsForPeriod(): Map<LocalDate, Int>
 }
