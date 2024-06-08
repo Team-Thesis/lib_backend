@@ -1,12 +1,14 @@
 package sru.edu.sru_lib_management.core.domain.service.implementation
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.dto.AttendDto
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomEntryCount
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
-import sru.edu.sru_lib_management.core.common.Result
-import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomEntry
 import sru.edu.sru_lib_management.core.domain.service.IAttendService
 import java.time.LocalDate
 import java.time.LocalTime
@@ -56,9 +58,9 @@ class AttendService(
     /*
     * Delete attend
     * */
-    override suspend fun deleteAttend(attendID: Long): Result<Boolean> {
+    override suspend fun deleteAttend(attendId: Long): Result<Boolean> {
         return runCatching{
-            repository.delete(attendID)
+            repository.delete(attendId)
         }.fold(
             onSuccess = {
                 Result.Success(true)
@@ -106,9 +108,9 @@ class AttendService(
     /*
     * Select attend by id
     * */
-    override suspend fun getAttend(attendID: Long): Result<Attend?> {
+    override suspend fun getAttend(attendId: Long): Result<Attend?> {
         return runCatching{
-            repository.getById(attendID)
+            repository.getById(attendId)
         }.fold(
             onSuccess = {att ->
                 Result.Success(att)
@@ -122,14 +124,15 @@ class AttendService(
     /*
     * Get attend by student id
     * */
-    override suspend fun getAttByStudentID(studentID: Long, date: LocalDate): Result<Attend?> {
+    override suspend fun getAttByStudentID(studentId: Long, date: LocalDate): Result<Attend?> {
         return runCatching{
-            repository.getAttendByStudentID(studentID, date)
+            repository.getAttendByStudentID(studentId, date)
         }.fold(
             onSuccess = {
                 Result.Success(it)
             },
             onFailure = {
+                println(it.printStackTrace())
                 Result.Failure("${it.message}")
             }
         )
@@ -138,19 +141,20 @@ class AttendService(
     /*
     * Update exiting time when student go out
     * */
-    override suspend fun updateExitingTime(studentID: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean> {
+    override suspend fun updateExitingTime(studentId: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean> {
         return runCatching {
-            val findExistAttend = repository.getAttendByStudentID(studentID, date)
+            val findExistAttend = repository.getAttendByStudentID(studentId, date)
             println(findExistAttend)
             if (findExistAttend == null){
-                Result.ClientError("Can not find attend with this student id: $studentID")
+                Result.ClientError("Can not find attend with this student id: $studentId")
             }
-            repository.updateExitingTime(exitingTimes, studentID, date)
+            repository.updateExitingTime(exitingTimes, studentId, date)
         }.fold(
             onSuccess = {
                 Result.Success(it)
             },
             onFailure = {
+                println(it.printStackTrace())
                 Result.Failure("${it.message}")
             }
         )
@@ -175,7 +179,6 @@ class AttendService(
             )
         }
     }
-
     override suspend fun countVisitorsForPeriod(): Result<Map<LocalDate, Int>> {
         return runCatching {
             repository.countVisitorsForPeriod()
@@ -189,5 +192,55 @@ class AttendService(
             }
         )
     }
+
+    override suspend fun countAndCompareAttend(
+        date: LocalDate, period: Int
+    ): Result<CustomEntryCount> = runCatching {
+
+        val areFieldBlank = date > LocalDate.now() || period == 0
+        val writeInput = period == 1 || period == 7 || period == 30 || period == 365
+
+        if (areFieldBlank || !writeInput)
+            return Result.ClientError("Invalid data input.")
+
+        val getCount = repository.countCurrentAndPreviousBorrow(date, period)
+        val currentValue: Int = getCount.currentValue
+        val previousValue = getCount.previousValue
+
+        val percentageChange: Float = if (previousValue == 0){
+            if (currentValue == 0) 0f else 100f
+        }else{
+            ((currentValue - previousValue)).toFloat() / previousValue * 100
+        }
+        // Return this
+        CustomEntryCount(currentValue, percentageChange)
+    }.fold(
+        onSuccess = { data ->
+            Result.Success(data)
+        },
+        onFailure = { e ->
+            println(e.printStackTrace())
+            Result.Failure(e.message.toString())
+        }
+    )
+
+    override suspend fun getAttendDetails(): Result<Flow<AttendDto>> = runCatching {
+        val attend = repository.getAttendDetail()
+        attend.forEach {
+            if (it.exitingTimes == null){
+                it.status = "IN"
+            }
+            else it.status = "OUT"
+        }
+        attend.asFlow()
+    }.fold(
+        onSuccess = {
+            Result.Success(it)
+        },
+        onFailure = {
+            println(it.printStackTrace())
+            Result.Failure(it.message.toString())
+        }
+    )
 
 }

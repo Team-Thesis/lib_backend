@@ -10,6 +10,7 @@ import sru.edu.sru_lib_management.core.data.query.BorrowQuery.GET_BORROWS_QUERY
 import sru.edu.sru_lib_management.core.data.query.BorrowQuery.GET_BORROW_QUERY
 import sru.edu.sru_lib_management.core.data.query.BorrowQuery.SAVE_BORROW_QUERY
 import sru.edu.sru_lib_management.core.data.query.BorrowQuery.UPDATE_BORROW_QUERY
+import sru.edu.sru_lib_management.core.domain.dto.CompareValue
 import sru.edu.sru_lib_management.core.domain.model.BorrowBook
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BorrowBookRepository
 import java.sql.Date
@@ -36,6 +37,25 @@ class BorrowBookRepositoryImp(
            .toMap()
     }
 
+    override suspend fun countCurrentAndPreviousBorrow(
+        date: LocalDate, period: Int
+    ): CompareValue {
+        val param = mapOf(
+            "date" to date,
+            "period" to period
+        )
+        return client.sql("CALL CountBorrowByPeriod(:date, :period)")
+            .bindValues(param)
+            .map { row ->
+                CompareValue(
+                    row.get("current_value", Int::class.java)!!,
+                    row.get("previous_value", Int::class.java)!!
+                )
+            }
+            .one()
+            .awaitSingle()
+    }
+
     override suspend fun save(entity: BorrowBook): BorrowBook {
         client.sql(SAVE_BORROW_QUERY)
             .bindValues(paramsMap(entity))
@@ -52,14 +72,12 @@ class BorrowBookRepositoryImp(
         return entity
     }
 
-    override suspend fun getById(id: Long): BorrowBook? {
-        return client.sql(GET_BORROW_QUERY)
+    override suspend fun getById(id: Long): BorrowBook? = client.sql(GET_BORROW_QUERY)
             .bind("borrowId", id)
             .map { row: Row, _ ->
                 row.rowMapping()
             }
             .awaitOneOrNull()
-    }
 
     override fun getAll(): Flow<BorrowBook> = client
         .sql(GET_BORROWS_QUERY)
@@ -67,7 +85,6 @@ class BorrowBookRepositoryImp(
             row.rowMapping()
         }
         .flow()
-
 
 
     override suspend fun delete(id: Long): Boolean {

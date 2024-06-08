@@ -12,6 +12,8 @@ import sru.edu.sru_lib_management.core.data.query.AttendQuery.GET_ATTEND_QUERY_B
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.SAVE_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_ATTEND_QUERY
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_EXIT_TIME
+import sru.edu.sru_lib_management.core.domain.dto.AttendDto
+import sru.edu.sru_lib_management.core.domain.dto.CompareValue
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
 import java.time.LocalDate
@@ -74,10 +76,10 @@ class AttendRepositoryImp(
         return rowEffect > 0
     }
 
-    override suspend fun updateExitingTime(exitingTimes: LocalTime, studentID: Long, date: LocalDate): Boolean {
+    override suspend fun updateExitingTime(exitingTimes: LocalTime, studentId: Long, date: LocalDate): Boolean {
         val rowEffect = client.sql(UPDATE_EXIT_TIME)
             .bind("exitingTimes", exitingTimes)
-            .bind("studentID", studentID)
+            .bind("studentId", studentId)
             .bind("date", date)
             .fetch()
             .awaitRowsUpdated()
@@ -93,9 +95,9 @@ class AttendRepositoryImp(
             .awaitSingle()
     }
 
-    override suspend fun getAttendByStudentID(studentID: Long, date: LocalDate): Attend? {
+    override suspend fun getAttendByStudentID(studentId: Long, date: LocalDate): Attend? {
         return client.sql(GET_ATTEND_QUERY_BY_STUDENT_ID)
-            .bind("studentID", studentID)
+            .bind("studentId", studentId)
             .bind("date", date)
             .map { row: Row, _ ->
                 row.mapToAttend()
@@ -113,6 +115,43 @@ class AttendRepositoryImp(
             .collectList()
             .awaitSingle()
             .toMap()
+    }
+
+    override suspend fun countCurrentAndPreviousBorrow(date: LocalDate, period: Int): CompareValue {
+        val param = mapOf(
+            "date" to date,
+            "period" to period
+        )
+        return client.sql("CALL CountAttendByPeriod(:date, :period)")
+            .bindValues(param)
+            .map {row ->
+                CompareValue(
+                    row.get("current_value", Int::class.java)!!,
+                    row.get("previous_value", Int::class.java)!!
+                )
+            }
+            .one()
+            .awaitSingle()
+    }
+
+    override suspend fun getAttendDetail(): List<AttendDto> {
+        return client.sql("CALL GetAttendDetails()")
+            .map {row ->
+                AttendDto(
+                    studentId = row.get("student_id", Long::class.java)!!,
+                    studentName = row.get("studentName", String::class.java)!!,
+                    gender = row.get("gender", String::class.java)!!,
+                    major = row.get("majorName", String::class.java)!!,
+                    entryTimes = row.get("entryTimes", LocalTime::class.java)!!,
+                    exitingTimes = row.get("exitingTime", LocalTime::class.java),
+                    purpose = row.get("purpose", String::class.java)!!,
+                    status = null
+                )
+            }
+            .all()
+            .collectList()
+            .awaitSingle()
+            .toList()
     }
 
 

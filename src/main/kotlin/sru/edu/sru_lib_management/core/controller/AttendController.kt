@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.dto.AttendDto
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.service.IAttendService
 import java.time.LocalDate
@@ -79,11 +80,11 @@ class AttendController(
     * */
     @PutMapping
     suspend fun updateExitingTime(
-        @RequestParam studentID: Long,
+        @RequestParam studentId: Long,
         @RequestParam date: LocalDate,
         @RequestParam exitingTimes: LocalTime
     ): ResponseEntity<Any> = coroutineScope{
-        when(val result = service.updateExitingTime(studentID, date, exitingTimes)){
+        when(val result = service.updateExitingTime(studentId, date, exitingTimes)){
             is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.BAD_REQUEST)
             is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
             is Result.Success -> ResponseEntity(result.data, HttpStatus.ACCEPTED)
@@ -120,4 +121,34 @@ class AttendController(
             is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
+
+    /*
+   * ->  http://localhost:8090/api/v1/att/compare
+   * Count number of attend by custom time and compare it to the previous time
+   * */
+    @GetMapping("/compare")
+    suspend fun countAndCompare(
+        @RequestParam date: LocalDate,
+        @RequestParam period: Int
+    ): ResponseEntity<Any> = coroutineScope {
+        when(val result = service.countAndCompareAttend(date, period)){
+            is Result.Success -> ResponseEntity(result.data, HttpStatus.OK)
+            is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.CONFLICT)
+            is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    /*
+   * ->  http://localhost:8090/api/v1/att/detail
+   * Count number of student by custom time
+   * */
+    @GetMapping("/detail")
+    suspend fun getDetails(): ResponseEntity<Any> = coroutineScope {
+        when(val result = service.getAttendDetails()){
+            is Result.Success -> ResponseEntity(result.data, HttpStatus.OK)
+            is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.CONFLICT)
+            is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
 }

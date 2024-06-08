@@ -1,4 +1,5 @@
 USE sru_library;
+
 # Get borrow book
 Create PROCEDURE CountAttendByPeriod(in inputDate DATE, in period INT)
 BEGIN
@@ -22,8 +23,8 @@ BEGIN
         SELECT COUNT(*) INTO previous_date_count
         FROM attend WHERE date = previous_date;
         # Return the results
-        SELECT current_date_count as current_day,
-               previous_date_count as previous_day;
+        SELECT current_date_count as current_value,
+               previous_date_count as previous_value;
 
     ELSEIF period = 7 Then
         #Select current week
@@ -35,8 +36,8 @@ BEGIN
         FROM attend
         WHERE date BETWEEN inputDate - INTERVAL 13 day and inputDate - INTERVAL 7 day;
         # Return the results
-        SELECT current_7_day_count as current_7_days,
-               previous_7_day_count as previous_7_days;
+        SELECT current_7_day_count as current_value,
+               previous_7_day_count as previous_value;
 
     ELSEIF period = 30 Then
         # Select count for current month
@@ -48,8 +49,8 @@ BEGIN
         FROM attend
         WHERE YEAR(date) = YEAR(inputDate - INTERVAL 1 MONTH) AND MONTH(date) = MONTH(inputDate - INTERVAL 1 MONTH);
         # Return Value
-        SELECT current_month_count as current_month,
-               previous_month_count as previous_month;
+        SELECT current_month_count as current_value,
+               previous_month_count as previous_value;
 
     ELSEIF period = 365 Then
         # Select count for current year
@@ -61,7 +62,7 @@ BEGIN
         FROM attend
         WHERE date between inputDate - INTERVAL ((365*2) - 1) day and inputDate - Interval 365 day ;
         # Return Value
-        SELECT current_year_count as current_year,
-               previous_year_count as previous_year;
+        SELECT current_year_count as current_value,
+               previous_year_count as previous_value;
     END if;
 end;

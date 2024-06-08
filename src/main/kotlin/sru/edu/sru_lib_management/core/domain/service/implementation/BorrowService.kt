@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomBorrowCount
 import sru.edu.sru_lib_management.core.domain.model.BorrowBook
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BookRepository
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BorrowBookRepository
@@ -92,6 +93,39 @@ class BorrowService(
         onFailure = {
             println(it.printStackTrace())
             Result.Failure(it.message.toString())
+        }
+    )
+
+    override suspend fun compareCurrentAndPreviousBorrow(
+        date: LocalDate,
+        period: Int
+    ): Result<CustomBorrowCount> = runCatching {
+
+        val areFieldBlank = period == 0 || date > LocalDate.now()
+        val writeInput = period == 1 || period == 7 || period == 30 || period == 365
+
+        if (areFieldBlank || !writeInput)
+            return Result.ClientError("Invalid data input.")
+
+        val getCount = borrowBookRepository.countCurrentAndPreviousBorrow(date, period)
+        val currentCount = getCount.currentValue
+        val previousCount = getCount.previousValue
+        val percentageChange: Float = if (previousCount == 0){
+            if (currentCount == 0) 0f else 100f
+        }else{
+            ((currentCount - previousCount)).toFloat() / previousCount * 100f
+        }
+        CustomBorrowCount(
+            currentCount,
+            percentageChange
+        )
+    }.fold(
+        onSuccess = {
+            value ->  Result.Success(value)
+        },
+        onFailure = { e ->
+            println(e.printStackTrace())
+            Result.Failure(e.message.toString())
         }
     )
 }

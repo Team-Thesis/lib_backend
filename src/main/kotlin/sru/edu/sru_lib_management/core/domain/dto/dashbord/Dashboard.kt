@@ -1,8 +1,8 @@
 package sru.edu.sru_lib_management.core.domain.dto.dashbord
 
 data class Dashboard(
-    val entryToday: CustomEntry,
-    val customBorrow: CustomBorrow,
+    val entryToday: CustomEntryCount,
+    val customBorrow: CustomBorrowCount,
     val bookSponsor: BookSponsor,
     val customEntry: List<StudentEntry>,
     val totalBookOfThisMonth: TotalBookOfThisMonth,
