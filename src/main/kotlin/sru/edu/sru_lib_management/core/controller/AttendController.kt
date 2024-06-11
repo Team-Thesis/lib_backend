@@ -151,4 +151,17 @@ class AttendController(
         }
     }
 
+    /*
+  * ->  http://localhost:8090/api/v1/att/weekly
+  * Count weekly visit of student by custom time
+  * */
+    @GetMapping("/weekly")
+    suspend fun weeklyVisitor(): ResponseEntity<Any> = coroutineScope {
+        when(val result = service.getWeeklyVisit()){
+            is Result.Success -> ResponseEntity(result.data, HttpStatus.OK)
+            is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
+            is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.CONFLICT)
+        }
+    }
+
 }

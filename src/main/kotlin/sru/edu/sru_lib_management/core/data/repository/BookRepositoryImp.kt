@@ -1,7 +1,9 @@
 package sru.edu.sru_lib_management.core.data.repository
 
+import io.r2dbc.spi.Parameter.In
 import io.r2dbc.spi.Row
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Component
@@ -12,6 +14,7 @@ import sru.edu.sru_lib_management.core.data.query.BookQuery.GET_BOOK_QUERY
 import sru.edu.sru_lib_management.core.data.query.BookQuery.SAVE_BOOK_QUERY
 import sru.edu.sru_lib_management.core.data.query.BookQuery.SEARCH_BOOK_QUERY
 import sru.edu.sru_lib_management.core.data.query.BookQuery.UPDATE_BOOK_QUERY
+import sru.edu.sru_lib_management.core.domain.dto.BookAvailableDto
 import sru.edu.sru_lib_management.core.domain.model.Books
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BookRepository
 
@@ -21,7 +24,7 @@ class BookRepositoryImp(
     private val client: DatabaseClient
 ) : BookRepository {
 
-   suspend fun searchBooks(criteria: Map<String, Any?>): List<Books> {
+    suspend fun searchBooks(criteria: Map<String, Any?>): List<Books> {
         val query = StringBuilder(SEARCH_BOOK_QUERY)
         val params = mutableMapOf<String, Any?>()
 
@@ -40,6 +43,20 @@ class BookRepositoryImp(
         return execute.map { row: Row, _ ->
             row.rowMapping()
         }.all().collectList().awaitSingle()
+    }
+
+    override suspend fun bookAvailable(): List<BookAvailableDto> {
+        return client.sql("CALL GetAvailableBook()")
+            .map { row ->
+                BookAvailableDto(
+                    language = row.get("language_name", String::class.java)!!,
+                    totalBook = row.get("total_book", Int::class.java)!!,
+                    available = row.get("available_books", Int::class.java)!!
+                )
+            }
+            .all()
+            .collectList()
+            .awaitSingle()
     }
 
     @Transactional

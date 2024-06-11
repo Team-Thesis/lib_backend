@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.common.Result
 import sru.edu.sru_lib_management.core.domain.dto.AttendDto
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomEntryCount
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.TotalMajorVisitor
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.WeeklyVisitor
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
 import sru.edu.sru_lib_management.core.domain.service.IAttendService
@@ -179,12 +181,12 @@ class AttendService(
             )
         }
     }
-    override suspend fun countVisitorsForPeriod(): Result<Map<LocalDate, Int>> {
+    override suspend fun getWeeklyVisit(): Result<WeeklyVisitor> {
         return runCatching {
-            repository.countVisitorsForPeriod()
+            repository.getWeeklyVisit()
         }.fold(
             onSuccess = {
-                Result.Success(it)
+                Result.Success(WeeklyVisitor(it))
             },
             onFailure = {
                 println(it.printStackTrace())
@@ -203,7 +205,7 @@ class AttendService(
         if (areFieldBlank || !writeInput)
             return Result.ClientError("Invalid data input.")
 
-        val getCount = repository.countCurrentAndPreviousBorrow(date, period)
+        val getCount = repository.countCurrentAndPreviousAttend(date, period)
         val currentValue: Int = getCount.currentValue
         val previousValue = getCount.previousValue
 
@@ -224,7 +226,7 @@ class AttendService(
         }
     )
 
-    override suspend fun getAttendDetails(): Result<Flow<AttendDto>> = runCatching {
+    override suspend fun getAttendDetails(): Result<List<AttendDto>> = runCatching {
         val attend = repository.getAttendDetail()
         attend.forEach {
             if (it.exitingTimes == null){
@@ -232,7 +234,19 @@ class AttendService(
             }
             else it.status = "OUT"
         }
-        attend.asFlow()
+        attend
+    }.fold(
+        onSuccess = {
+            Result.Success(it)
+        },
+        onFailure = {
+            println(it.printStackTrace())
+            Result.Failure(it.message.toString())
+        }
+    )
+
+    override suspend fun getTotalMajorVisit(): Result<TotalMajorVisitor> = runCatching {
+        repository.totalMajorVisit()
     }.fold(
         onSuccess = {
             Result.Success(it)

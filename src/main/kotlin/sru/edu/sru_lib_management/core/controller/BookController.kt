@@ -62,4 +62,16 @@ class BookController(
         }
     }
 
+    /*
+    * -> http://localhost:8090/api/v1/book/available
+    * This Endpoint use to update book in database
+    * */
+    @GetMapping("/available")
+    suspend fun availableBook(): ResponseEntity<Any> = coroutineScope {
+        when(val result = service.getAvailableBook()){
+            is Result.Success -> ResponseEntity(result.data, HttpStatus.OK)
+            is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)
+            is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.BAD_REQUEST)
+        }
+    }
 }

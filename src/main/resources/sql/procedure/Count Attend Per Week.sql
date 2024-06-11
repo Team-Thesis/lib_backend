@@ -1,10 +1,16 @@
 USE sru_library;
-CREATE PROCEDURE CountAttendPerWeek()
+
+CREATE PROCEDURE CountAttendPerWeek(IN Monday DATE, IN Sunday DATE)
 begin
-    DECLARE startDate DATE;
-    SET startDate = CURDATE() - interval 7 day ;
-    select date, COUNT(*) as count
-    from attend where date >= startDate GROUP BY date ORDER BY date;
+    select
+        DAYNAME(date) as day_name,
+        COUNT(*) as count
+    from attend
+    where date >= Monday AND date <= Sunday
+    GROUP BY date
+    ORDER BY date;
 end;
 
+CALL CountAttendPerWeek('2024-06-03', '2024-06-09');
 
+DROP PROCEDURE CountAttendPerWeek;

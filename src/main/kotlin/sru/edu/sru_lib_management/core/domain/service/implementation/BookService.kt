@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Books
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BookRepository
 import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.dto.BookAvailableDto
 import sru.edu.sru_lib_management.core.domain.service.IBookService
 
 @Component
@@ -25,7 +26,7 @@ class BookService(
         )
     }
 
-    override suspend fun saveBook(books: Books): Result<Books?> {
+    override suspend fun saveBook(books: Books): Result<Books> {
         return runCatching {
             val areFieldsBlank = books.bookId.isBlank() || books.bookTitle.isBlank()
             val isHasID = repository.getById(books.bookId)
@@ -44,7 +45,7 @@ class BookService(
         )
     }
 
-    override suspend fun updateBook(books: Books): Result<Books?> {
+    override suspend fun updateBook(books: Books): Result<Books> {
         return runCatching {
             repository.getById(books.bookId) ?: return Result.ClientError("Book with ID ${books.bookId} not found!")
             repository.update(books)
@@ -59,12 +60,24 @@ class BookService(
         )
     }
 
-    override suspend fun getBook(bookID: Long): Result<Books?> {
+    override suspend fun getBook(bookID: Long): Result<Books> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteBook(bookID: Long): Result<Boolean?> {
+    override suspend fun deleteBook(bookID: Long): Result<Boolean> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun getAvailableBook(): Result<List<BookAvailableDto>> = runCatching {
+        repository.bookAvailable()
+    }.fold(
+        onSuccess = {data ->
+            Result.Success(data)
+        },
+        onFailure = { e ->
+            println(e.printStackTrace())
+            Result.Failure(e.message.toString())
+        }
+    )
 
 }

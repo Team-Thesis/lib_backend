@@ -16,7 +16,7 @@ import javax.mail.internet.MimeMessage
 
 @Service
 class EmailValidationService {
-    val emailPattern: Pattern = Pattern.compile( "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
+    private val emailPattern: Pattern = Pattern.compile( "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
 
     suspend fun validateEmail(email: String): String? {
         if (!isValidFormat(email)) {
@@ -61,7 +61,7 @@ class EmailValidationService {
                 val transport: Transport = session.transport
                 transport.connect()
                 val message = MimeMessage(session)
-                message.setFrom(InternetAddress("verify@yourdomain.com"))
+                message.setFrom(InternetAddress("sruthesis@gmail.com"))
                 message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(email))
                 transport.sendMessage(message, message.allRecipients)
                 transport.close()

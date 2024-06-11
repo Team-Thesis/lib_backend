@@ -14,10 +14,14 @@ import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_ATTEND_QUER
 import sru.edu.sru_lib_management.core.data.query.AttendQuery.UPDATE_EXIT_TIME
 import sru.edu.sru_lib_management.core.domain.dto.AttendDto
 import sru.edu.sru_lib_management.core.domain.dto.CompareValue
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.DayVisitor
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.TotalMajorVisitor
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.temporal.TemporalAdjusters
 
 @Component
 class AttendRepositoryImp(
@@ -87,12 +91,20 @@ class AttendRepositoryImp(
     }
 
     override suspend fun count(date: Int): Int? {
-        return client.sql("CALL CountAttendByCustomTime(:date)")
-            .bind("date", date)
-            .map {row ->
-                row.get("attendance_count", Int::class.java)
-            }
-            .awaitSingle()
+        return if (date != 0){
+            client.sql("CALL CountAttendByCustomTime(:date)")
+                .bind("date", date)
+                .map {row ->
+                    row.get("attendance_count", Int::class.java)
+                }
+                .awaitSingle()
+        }else{
+            client.sql("CALL CountTotalAttend()")
+                .map {row ->
+                    row.get("attendance_count", Int::class.java)
+                }
+                .awaitSingle()
+        }
     }
 
     override suspend fun getAttendByStudentID(studentId: Long, date: LocalDate): Attend? {
@@ -104,20 +116,28 @@ class AttendRepositoryImp(
             }.awaitSingleOrNull()
     }
 
-    override suspend fun countVisitorsForPeriod(): Map<LocalDate, Int> {
-        return client.sql("CALL CountAttendPerWeek()")
+    override suspend fun getWeeklyVisit(): List<DayVisitor> {
+        val today = LocalDate.now()
+        val thisWeekMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val lastWeekMonday = thisWeekMonday.minusWeeks(1)
+        val lastWeekSunday = lastWeekMonday.plusDays(6)
+        val params = mapOf(
+            "monday" to lastWeekMonday,
+            "sunday" to lastWeekSunday
+        )
+        return client.sql("CALL CountAttendPerWeek(:monday, :sunday)")
+            .bindValues(params)
             .map { row, _ ->
-                val date = row.get("date", LocalDate::class.java)!!
+                val dayName = row.get("day_name", String::class.java)!!
                 val count = row.get("count", Int::class.java)!!
-                date to  count
+                DayVisitor(day = dayName, count = count)
             }
             .all()
             .collectList()
             .awaitSingle()
-            .toMap()
     }
 
-    override suspend fun countCurrentAndPreviousBorrow(date: LocalDate, period: Int): CompareValue {
+    override suspend fun countCurrentAndPreviousAttend(date: LocalDate, period: Int): CompareValue {
         val param = mapOf(
             "date" to date,
             "period" to period
@@ -154,6 +174,24 @@ class AttendRepositoryImp(
             .toList()
     }
 
+    override suspend fun totalMajorVisit(): TotalMajorVisitor {
+        val totalAtt = count(0)
+        val data = client.sql("CALL CountMajorAttendLib()")
+            .map { row ->
+                val major = row.get("Major", String::class.java)!!
+                val amount = row.get("Amount", Int::class.java)!!
+                major to amount
+            }
+            .all()
+            .collectList()
+            .awaitSingle()
+        val major = TotalMajorVisitor(
+            total = totalAtt!!,
+            majorCount = data.toMap()
+        )
+        println(major)
+        return major
+    }
 
     private fun paramMap(attend: Attend): Map<String, Any?> = mapOf(
         "attendID" to attend.attendId,

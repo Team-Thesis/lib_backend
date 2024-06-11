@@ -24,7 +24,7 @@ class AuthController(
     @PostMapping("/register")
     suspend fun register(
         @RequestBody request: AuthRequest
-    ): ResponseEntity<String>{
+    ): ResponseEntity<String> {
         val areFieldBlank = request.username.isBlank() || request.password.isBlank()
         val isPasswordTooShort = request.password.length < 8
         // check field

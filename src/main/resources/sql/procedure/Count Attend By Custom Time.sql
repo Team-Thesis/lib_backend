@@ -13,6 +13,10 @@ CREATE PROCEDURE CountAttendByCustomTime(
     SELECT COUNT(*) AS attendance_count From attend WHERE date >= StartDate;
 end;
 
+CREATE PROCEDURE CountTotalAttend()
+BEGIN
+    SELECT COUNT(*) as attendance_count from attend;
+end;
 
 
 

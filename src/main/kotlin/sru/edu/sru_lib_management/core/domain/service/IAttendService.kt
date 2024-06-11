@@ -6,6 +6,9 @@ import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.common.Result
 import sru.edu.sru_lib_management.core.domain.dto.AttendDto
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomEntryCount
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.DayVisitor
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.TotalMajorVisitor
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.WeeklyVisitor
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -21,8 +24,9 @@ interface IAttendService {
     suspend fun updateExitingTime(studentId: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean>
     suspend fun countAttendCustomTime(date: Int): Result<Int?>
 
-    suspend fun countVisitorsForPeriod(): Result<Map<LocalDate, Int>>
+    suspend fun getWeeklyVisit(): Result<WeeklyVisitor>
     suspend fun countAndCompareAttend(date: LocalDate, period: Int): Result<CustomEntryCount>
 
-    suspend fun getAttendDetails(): Result<Flow<AttendDto>>
+    suspend fun getAttendDetails(): Result<List<AttendDto>>
+    suspend fun getTotalMajorVisit(): Result<TotalMajorVisitor>
 }
