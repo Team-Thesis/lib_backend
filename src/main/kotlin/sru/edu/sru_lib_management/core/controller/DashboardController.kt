@@ -60,6 +60,7 @@ class DashboardController(
             is Result.Failure -> result.errorMsg
             is Result.ClientError -> result.clientErrMsg
         }
+
         return Dashboard(
             entryToday = entryToday,
             borrowToday = borrowToday,

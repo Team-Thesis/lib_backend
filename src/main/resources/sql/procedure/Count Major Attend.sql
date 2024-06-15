@@ -4,6 +4,7 @@ CREATE PROCEDURE CountMajorAttendLib()
 BEGIN
     SELECT
         m.major_name AS Major,
+        COUNT(DISTINCT m.major_name) as TotalMajor,
         COUNT(a.attend_id) AS Amount,
         ROUND(COUNT(a.attend_id) * 100.0 / (SELECT COUNT(*) FROM attend), 2) as Percentage
     FROM

@@ -116,6 +116,7 @@ class AttendRepositoryImp(
             }.awaitSingleOrNull()
     }
 
+    /// Count total major and total of each major
     override suspend fun getWeeklyVisit(): List<DayVisitor> {
         val today = LocalDate.now()
         val thisWeekMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -137,6 +138,7 @@ class AttendRepositoryImp(
             .awaitSingle()
     }
 
+    /// Count total major and total of each major
     override suspend fun countCurrentAndPreviousAttend(date: LocalDate, period: Int): CompareValue {
         val param = mapOf(
             "date" to date,
@@ -154,6 +156,7 @@ class AttendRepositoryImp(
             .awaitSingle()
     }
 
+    /// Count total major and total of each major
     override suspend fun getAttendDetail(): List<AttendDto> {
         return client.sql("CALL GetAttendDetails()")
             .map {row ->
@@ -174,8 +177,8 @@ class AttendRepositoryImp(
             .toList()
     }
 
+    /// Count total major and total of each major
     override suspend fun totalMajorVisit(): TotalMajorVisitor {
-        val totalAtt = count(0)
         val data = client.sql("CALL CountMajorAttendLib()")
             .map { row ->
                 val major = row.get("Major", String::class.java)!!
@@ -185,12 +188,10 @@ class AttendRepositoryImp(
             .all()
             .collectList()
             .awaitSingle()
-        val major = TotalMajorVisitor(
-            total = totalAtt!!,
+        return TotalMajorVisitor(
+            total = data.size,
             majorCount = data.toMap()
         )
-        println(major)
-        return major
     }
 
     private fun paramMap(attend: Attend): Map<String, Any?> = mapOf(
