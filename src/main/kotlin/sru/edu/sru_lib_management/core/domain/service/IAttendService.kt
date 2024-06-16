@@ -6,7 +6,6 @@ import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.common.Result
 import sru.edu.sru_lib_management.core.domain.dto.AttendDto
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomEntryCount
-import sru.edu.sru_lib_management.core.domain.dto.dashbord.DayVisitor
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.TotalMajorVisitor
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.WeeklyVisitor
 import java.time.LocalDate
