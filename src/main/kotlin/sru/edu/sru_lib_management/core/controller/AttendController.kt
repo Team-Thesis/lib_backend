@@ -130,7 +130,7 @@ class AttendController(
         @RequestParam date: LocalDate,
         @RequestParam period: Int
     ): ResponseEntity<Any> = coroutineScope {
-        when(val result = service.countAndCompareAttend(date, period)){
+        when(val result = service.analyticAttend(date, period)){
             is Result.Success -> ResponseEntity(result.data, HttpStatus.OK)
             is Result.ClientError -> ResponseEntity(result.clientErrMsg, HttpStatus.CONFLICT)
             is Result.Failure -> ResponseEntity(result.errorMsg, HttpStatus.INTERNAL_SERVER_ERROR)

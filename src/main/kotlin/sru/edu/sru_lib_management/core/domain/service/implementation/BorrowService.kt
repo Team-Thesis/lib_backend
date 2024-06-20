@@ -4,7 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.common.Result
-import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomBorrowCount
+import sru.edu.sru_lib_management.core.domain.dto.Analytic
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.CardData
 import sru.edu.sru_lib_management.core.domain.model.BorrowBook
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BookRepository
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BorrowBookRepository
@@ -96,10 +97,10 @@ class BorrowService(
         }
     )
 
-    override suspend fun compareCurrentAndPreviousBorrow(
+    override suspend fun analyticBorrow(
         date: LocalDate,
         period: Int
-    ): Result<CustomBorrowCount> = runCatching {
+    ): Result<Analytic> = runCatching {
 
         val areFieldBlank = period == 0 || date > LocalDate.now()
         val writeInput = period == 1 || period == 7 || period == 30 || period == 365
@@ -115,9 +116,9 @@ class BorrowService(
         }else{
             ((currentCount - previousCount)).toFloat() / previousCount * 100f
         }
-        CustomBorrowCount(
-            currentCount,
-            percentageChange
+        Analytic(
+            currentValue = currentCount,
+            percentage = percentageChange
         )
     }.fold(
         onSuccess = {

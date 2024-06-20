@@ -3,7 +3,6 @@ package sru.edu.sru_lib_management.core.domain.service.implementation
 import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import sru.edu.sru_lib_management.core.domain.model.Books
 import sru.edu.sru_lib_management.core.domain.repository.book_repository.BookRepository
 import sru.edu.sru_lib_management.core.common.Result

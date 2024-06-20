@@ -5,8 +5,9 @@ import kotlinx.coroutines.flow.asFlow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sru.edu.sru_lib_management.core.common.Result
+import sru.edu.sru_lib_management.core.domain.dto.Analytic
 import sru.edu.sru_lib_management.core.domain.dto.AttendDto
-import sru.edu.sru_lib_management.core.domain.dto.dashbord.CustomEntryCount
+import sru.edu.sru_lib_management.core.domain.dto.dashbord.CardData
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.TotalMajorVisitor
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.WeeklyVisitor
 import sru.edu.sru_lib_management.core.domain.model.Attend
@@ -195,9 +196,9 @@ class AttendService(
         )
     }
 
-    override suspend fun countAndCompareAttend(
+    override suspend fun analyticAttend(
         date: LocalDate, period: Int
-    ): Result<CustomEntryCount> = runCatching {
+    ): Result<Analytic> = runCatching {
 
         val areFieldBlank = date > LocalDate.now() || period == 0
         val writeInput = period == 1 || period == 7 || period == 30 || period == 365
@@ -215,7 +216,7 @@ class AttendService(
             ((currentValue - previousValue)).toFloat() / previousValue * 100
         }
         // Return this
-        CustomEntryCount(currentValue, percentageChange)
+        Analytic(currentValue = currentValue, percentage = percentageChange)
     }.fold(
         onSuccess = { data ->
             Result.Success(data)
