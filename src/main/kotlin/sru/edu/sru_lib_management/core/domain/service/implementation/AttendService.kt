@@ -1,24 +1,25 @@
 package sru.edu.sru_lib_management.core.domain.service.implementation
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import sru.edu.sru_lib_management.core.common.APIException
 import sru.edu.sru_lib_management.core.common.Result
 import sru.edu.sru_lib_management.core.domain.dto.Analytic
 import sru.edu.sru_lib_management.core.domain.dto.AttendDto
-import sru.edu.sru_lib_management.core.domain.dto.dashbord.CardData
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.TotalMajorVisitor
 import sru.edu.sru_lib_management.core.domain.dto.dashbord.WeeklyVisitor
 import sru.edu.sru_lib_management.core.domain.model.Attend
 import sru.edu.sru_lib_management.core.domain.repository.AttendRepository
+import sru.edu.sru_lib_management.core.domain.repository.student_repository.StudentRepository
 import sru.edu.sru_lib_management.core.domain.service.IAttendService
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Component
 class AttendService(
-    @Qualifier("attendRepositoryImp") private val repository: AttendRepository
+    @Qualifier("attendRepositoryImp") private val repository: AttendRepository,
+    private val studentRepository: StudentRepository
 ) : IAttendService {
 
     /*
@@ -26,6 +27,7 @@ class AttendService(
     * */
     override suspend fun saveAttend(attend: Attend): Result<Attend?> {
         return runCatching {
+            studentRepository.getById(attend.studentId) ?: throw APIException("Can not find student with this ID: ${attend.studentId}")
             repository.save(attend)
         }.fold(
             onSuccess = {att ->
@@ -147,7 +149,6 @@ class AttendService(
     override suspend fun updateExitingTime(studentId: Long, date: LocalDate, exitingTimes: LocalTime): Result<Boolean> {
         return runCatching {
             val findExistAttend = repository.getAttendByStudentID(studentId, date)
-            println(findExistAttend)
             if (findExistAttend == null){
                 Result.ClientError("Can not find attend with this student id: $studentId")
             }
