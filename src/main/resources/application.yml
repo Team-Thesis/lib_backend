@@ -7,9 +7,9 @@ spring:
   application:
     name: sru_lib_management
   datasource:
-    url: jdbc:mysql://localhost:3306/sru_library
-    username: root
-    password: viwath@261102
+    url: jdbc:mysql://${db_host:localhost}:${db_port:3306}/${db_name:sru_library}
+    username: ${db_username}
+    password: ${db_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
