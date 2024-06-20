@@ -21,5 +21,5 @@ interface AttendRepository : ICrudRepository<Attend, Long> {
 
     suspend fun countCurrentAndPreviousAttend(date: LocalDate, period: Int): CompareValue
     suspend fun getAttendDetail(): List<AttendDto>
-    suspend fun totalMajorVisit(): TotalMajorVisitor
+    suspend fun totalMajorVisit(): List<TotalMajorVisitor>
 }

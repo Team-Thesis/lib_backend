@@ -21,7 +21,7 @@ class DashboardController(
     @Qualifier("attendService") private val attendService: IAttendService,
     @Qualifier("borrowService") private val borrowService: IBorrowService
 ){
-    private val card: MutableList<CardData> = mutableListOf()
+    private var card: List<CardData>? = null
 
     //http://localhost:8090/api/v1/dashboard
     @GetMapping
@@ -65,18 +65,19 @@ class DashboardController(
             is Result.ClientError -> result.clientErrMsg
         }
         /// Card
-        card.add(CardData("Entry Today", entryToday.currentValue, entryToday.percentage))
-        card.add(CardData("Book Borrow Today", borrowToday.currentValue, borrowToday.percentage))
-        card.add(CardData("Book Sponsor", 0, 0f))
-        card.add(CardData("Total Entry Of This Month", entryThisMonth.currentValue, entryThisMonth.percentage))
+        card = listOf(
+            CardData("Entry Today", entryToday.currentValue, entryToday.percentage),
+            CardData("Book Borrow Today", borrowToday.currentValue, borrowToday.percentage),
+            CardData("Book Sponsor", 0, 0f),
+            CardData("Total Entry Of This Month", entryThisMonth.currentValue, entryThisMonth.percentage)
+        )
 
         return Dashboard(
-            cardData = card,
-            customEntry = customEntry,
-            totalBookOfThisMonth = bookAvailable,
+            cardData = card!!,
             totalMajorVisitor = totalMajorVisitor,
             weeklyVisitor = weeklyVisitor,
-            bookAvailable = bookAvailable
+            bookAvailable = bookAvailable,
+            customEntry = customEntry
         )
     }
 

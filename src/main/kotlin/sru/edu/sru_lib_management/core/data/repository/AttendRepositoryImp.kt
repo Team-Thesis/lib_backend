@@ -178,20 +178,20 @@ class AttendRepositoryImp(
     }
 
     /// Count total major and total of each major
-    override suspend fun totalMajorVisit(): TotalMajorVisitor {
-        val data = client.sql("CALL CountMajorAttendLib()")
+    override suspend fun totalMajorVisit(): List<TotalMajorVisitor> {
+        return client.sql("CALL CountMajorAttendLib()")
             .map { row ->
                 val major = row.get("Major", String::class.java)!!
                 val amount = row.get("Amount", Int::class.java)!!
-                major to amount
+                TotalMajorVisitor(
+                    majorName = major,
+                    totalAmount = amount
+                )
             }
             .all()
             .collectList()
             .awaitSingle()
-        return TotalMajorVisitor(
-            total = data.size,
-            majorCount = data.toMap()
-        )
+            .toList()
     }
 
     private fun paramMap(attend: Attend): Map<String, Any?> = mapOf(

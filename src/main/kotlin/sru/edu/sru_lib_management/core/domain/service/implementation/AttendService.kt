@@ -246,7 +246,7 @@ class AttendService(
         }
     )
 
-    override suspend fun getTotalMajorVisit(): Result<TotalMajorVisitor> = runCatching {
+    override suspend fun getTotalMajorVisit(): Result<List<TotalMajorVisitor>> = runCatching {
         repository.totalMajorVisit()
     }.fold(
         onSuccess = {

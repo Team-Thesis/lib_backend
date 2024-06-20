@@ -28,5 +28,5 @@ interface IAttendService {
     suspend fun analyticAttend(date: LocalDate, period: Int): Result<Analytic>
 
     suspend fun getAttendDetails(): Result<List<AttendDto>>
-    suspend fun getTotalMajorVisit(): Result<TotalMajorVisitor>
+    suspend fun getTotalMajorVisit(): Result<List<TotalMajorVisitor>>
 }
